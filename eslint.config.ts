@@ -1,90 +1,279 @@
-import antfu from '@antfu/eslint-config'
+import pluginVue from 'eslint-plugin-vue'
+import unocss from '@unocss/eslint-config/flat'
+import vueParser from 'vue-eslint-parser'
+import { defineConfig, globalIgnores } from 'eslint/config'
+import pluginJsonc from 'eslint-plugin-jsonc'
+import jsoncParser from 'jsonc-eslint-parser'
+import typeScriptParser from '@typescript-eslint/parser'
 
-export default antfu({
-  // 1. 基本配置
-  type: 'lib', // 表示当前项目是一个库（library），而不是应用（app）
-  // 2. 代码风格配置（Stylistic）
-  // stylistic: true,
-  // 或者你可以更加细粒度的设置
-  stylistic: {
-    indent: 2, // 缩进 2 个空格, 2 | 4 | 'tab'
-    quotes: 'single', // 使用双引号, single | 'double'
-    semi: true, // 强制分号结尾, true | false
-    // braceStyle: "1tbs", // 大括号换行风格（One True Brace Style）
-    // commaDangle: "never", // 禁止尾随逗号
-    jsx: true, // 支持 JSX 语法
-    // blockSpacing: true, // 代码块内加空格，如 `function foo() {}`
-    // multilineComments: true, // 多行注释风格
-    // preferArrowFunctions: true, // 优先使用箭头函数
 
-    // spaceBeforeFunctionParen: "always", // 函数名和参数括号间加空格
-    // spaceInParens: "never", // 括号内不加空格
-    // spacesInAngles: true, // 尖括号内加空格
-    // computedPropertySpacing: true, // 计算属性方括号内加空格
-    // restSpreadSpacing: true, // Rest/Spread 操作符周围加空格
-  },
-  // 3. 格式化工具
-  formatters: true, // 使用外部格式化工具（如 Prettier）
-
-  // 4. 支持的语言特性
-  typescript: true, // 启用 TypeScript 支持
-
-  vue: {
-    // Vue 文件的规则
-    overrides: {
-      // 强制 Vue 文件的顺序为 <template> -> <script> -> <style>
-      'vue/block-order': [
+export default defineConfig([
+  unocss,
+  // ...pluginJsonc.configs['flat/recommended-with-jsonc'],
+  // ...pluginVue.configs['flat/recommended'],
+  // Package.json 专用配置
+  {
+    files: ['**/package.json'],
+    languageOptions: {
+      parser: jsoncParser,
+    },
+    name: 'jsonc/package-json',
+    plugins: {
+      jsonc: pluginJsonc,
+    },
+    rules: {
+      'jsonc/sort-array-values': [
         'error',
         {
-          order: ['template', 'script', 'style'],
+          order: { type: 'asc' },
+          pathPattern: '^files$',
+        },
+      ],
+      'jsonc/sort-keys': [
+        'error',
+        {
+          order: [
+            'publisher',
+            'name',
+            'displayName',
+            'type',
+            'version',
+            'private',
+            'packageManager',
+            'description',
+            'author',
+            'contributors',
+            'license',
+            'funding',
+            'homepage',
+            'repository',
+            'bugs',
+            'keywords',
+            'categories',
+            'sideEffects',
+            'imports',
+            'exports',
+            'main',
+            'module',
+            'unpkg',
+            'jsdelivr',
+            'types',
+            'typesVersions',
+            'bin',
+            'icon',
+            'files',
+            'engines',
+            'activationEvents',
+            'contributes',
+            'scripts',
+            'peerDependencies',
+            'peerDependenciesMeta',
+            'dependencies',
+            'optionalDependencies',
+            'devDependencies',
+            'pnpm',
+            'overrides',
+            'resolutions',
+            'husky',
+            'simple-git-hooks',
+            'lint-staged',
+            'eslintConfig',
+          ],
+          pathPattern: '^$',
+        },
+        {
+          order: { type: 'asc' },
+          pathPattern: '^(?:dev|peer|optional|bundled)?[Dd]ependencies(Meta)?$',
+        },
+        {
+          order: { type: 'asc' },
+          pathPattern: '^(?:resolutions|overrides|pnpm.overrides)$',
+        },
+        {
+          order: ['types', 'import', 'require', 'default'],
+          pathPattern: '^exports.*$',
+        },
+        {
+          order: [
+            'pre-commit',
+            'prepare-commit-msg',
+            'commit-msg',
+            'post-commit',
+            'pre-rebase',
+            'post-rewrite',
+            'post-checkout',
+            'post-merge',
+            'pre-push',
+            'pre-auto-gc',
+          ],
+          pathPattern: '^(?:gitHooks|husky|simple-git-hooks)$',
         },
       ],
     },
   },
-
-  // 5. 规则覆盖（Rules）
-  /**
-   * 规则 https://www.wenjiangs.com/docs/eslint，vue规则：https://eslint.vuejs.org/rules/
-   * 主要有如下的设置规则，可以设置字符串也可以设置数字，两者效果一致
-   * 'off' 或 0 - 关闭规则
-   * 'warn' 或 1 - 开启警告规则，使用警告级别的错误：warn (不会导致程序退出),
-   * 'error' 或 2 - 开启错误规则，使用错误级别的错误：error (当被触发的时候，程序会退出)
-   */
-  rules: {
-    'no-console': 'off', // 允许 console
-    // "no-debugger": "off", // 允许 debugger
-    'prefer-arrow-callback': 'off', // 允许传统函数回调
-    // "func-style": "off", // 允许非箭头函数
-    // "@typescript-eslint/prefer-function-declarations": "off", // 关闭顶级函数必须用 function 声明的规则
+  // Vue 和 JavaScript 配置
+  {
+    files: ['**/*.vue', '**/*.js', '**/*.ts', '**/*.jsx', '**/*.tsx'],
+    name: 'vue/javascript',
+    plugins: {
+      vue: pluginVue,
+    },
+    rules: {
+      'vue/sort-keys': ['off'],
+      'vue/v-on-event-hyphenation': [
+        'error',
+        'always',
+        {
+          autofix: true,
+          ignore: [],
+        },
+      ],
+      'vue/require-explicit-emits': ['error'],
+      'vue/component-definition-name-casing': ['error', 'PascalCase'],
+      'vue/component-name-in-template-casing': [
+        'error',
+        'PascalCase',
+        {
+          registeredComponentsOnly: false,
+          ignores: ['solt', 'micro-app'],
+        },
+      ],
+      'vue/custom-event-name-casing': [
+        'error',
+        'kebab-case',
+        {
+          ignores: [],
+        },
+      ],
+      'vue/no-unused-vars': [
+        'error',
+        {
+          ignorePattern: '^_',
+        },
+      ],
+      'vue/define-emits-declaration': ['error', 'type-literal'],
+      'vue/next-tick-style': ['error', 'promise'],
+      'vue/no-multiple-objects-in-class': ['error'],
+      'vue/no-ref-object-reactivity-loss': ['error'],
+      'vue/no-use-v-else-with-v-for': ['error'],
+      'vue/require-explicit-slots': ['error'],
+      'vue/require-macro-variable-name': [
+        'error',
+        {
+          defineProps: 'props',
+          defineEmits: 'emit',
+          defineSlots: 'slots',
+          useSlots: 'slots',
+          useAttrs: 'attrs',
+        },
+      ],
+      'vue/require-typed-ref': ['error'],
+      'vue/return-in-computed-property': ['off'],
+      'vue/block-order': [
+        'error',
+        {
+          order: ['script', 'template', 'style'],
+        },
+      ],
+      'vue/array-bracket-spacing': ['error', 'never'],
+      'vue/arrow-spacing': ['error', { after: true, before: true }],
+      'vue/block-spacing': ['error', 'always'],
+      'vue/block-tag-newline': [
+        'error',
+        {
+          multiline: 'always',
+          singleline: 'always',
+        },
+      ],
+      'vue/brace-style': ['error', 'stroustrup', { allowSingleLine: true }],
+      'vue/comma-dangle': ['error', 'always-multiline'],
+      'vue/comma-spacing': ['error', { after: true, before: false }],
+      'vue/comma-style': ['error', 'last'],
+      'vue/html-comment-content-spacing': [
+        'error',
+        'always',
+        {
+          exceptions: ['-'],
+        },
+      ],
+      'vue/key-spacing': ['error', { afterColon: true, beforeColon: false }],
+      'vue/keyword-spacing': ['error', { after: true, before: true }],
+      'vue/object-curly-newline': 'off',
+      'vue/object-curly-spacing': ['error', 'always'],
+      'vue/object-property-newline': ['error', { allowAllPropertiesOnSameLine: true }],
+      'vue/operator-linebreak': ['error', 'before'],
+      'vue/padding-line-between-blocks': ['error', 'always'],
+      'vue/quote-props': ['error', 'consistent-as-needed'],
+      'vue/space-in-parens': ['error', 'never'],
+      'vue/template-curly-spacing': 'error',
+      'vue/component-options-name-casing': ['error', 'PascalCase'],
+      'vue/define-macros-order': [
+        'error',
+        {
+          order: ['defineOptions', 'defineProps', 'defineEmits', 'defineSlots'],
+        },
+      ],
+      'vue/dot-location': ['error', 'property'],
+      'vue/dot-notation': ['error', { allowKeywords: true }],
+      'vue/eqeqeq': ['error', 'smart'],
+      'vue/html-indent': ['error', 2],
+      'vue/html-quotes': ['error', 'double'],
+      'vue/max-attributes-per-line': 'off',
+      'vue/multi-word-component-names': 'off',
+      'vue/no-dupe-keys': 'off',
+      'vue/no-empty-pattern': 'error',
+      'vue/no-irregular-whitespace': 'error',
+      'vue/no-loss-of-precision': 'error',
+      'vue/no-restricted-syntax': [
+        'error',
+        'DebuggerStatement',
+        'LabeledStatement',
+        'WithStatement',
+      ],
+      'vue/no-restricted-v-bind': ['error', '/^v-/'],
+      'vue/no-setup-props-reactivity-loss': 'off',
+      'vue/no-sparse-arrays': 'error',
+      'vue/no-unused-refs': 'error',
+      'vue/no-useless-v-bind': 'error',
+      'vue/no-v-html': 'off',
+      'vue/object-shorthand': [
+        'error',
+        'always',
+        {
+          avoidQuotes: true,
+          ignoreConstructors: false,
+        },
+      ],
+      'vue/prefer-separate-static-class': 'error',
+      'vue/prefer-template': 'error',
+      'vue/prop-name-casing': ['error', 'camelCase'],
+      'vue/require-default-prop': 'off',
+      'vue/require-prop-types': 'off',
+      'vue/space-infix-ops': 'error',
+      'vue/space-unary-ops': ['error', { nonwords: false, words: true }],
+    },
+    languageOptions: {
+      parser: vueParser,
+      sourceType: 'module',
+      parserOptions: {
+        ecmaFeatures: {
+          jsx: true,
+        },
+        extraFileExtensions: ['.vue'],
+        parser: typeScriptParser,
+        sourceType: 'module',
+      },
+    },
   },
-
-  // 6. 忽略文件（Ignores）
-  // 9x版本 忽略文件这种配置方式 废弃掉eslintignore
-  // 【注意：ignores 是 @antfu/eslint-config 的配置方式，替代了传统的 .eslintignore 文件】
-  ignores: [
-    '*.sh',
-    'node_modules',
-    '*.md',
-    '*.woff',
-    '*.ttf',
-    '.vscode',
-    '.idea',
-    '/public',
-    '/docs',
-    '.husky',
-    '.local',
-    '/bin',
-    'Dockerfile',
-    '/dist',
-    '/src/libs',
-    'src/mock',
-    '*.min.js',
-    '/*.json',
-  ],
-  // 7. 其他配置
-  // 关闭对 JSON 和 YAML 的支持
-  jsonc: false, // 关闭 JSON 支持
-  yaml: false, // 关闭 YAML 支持
-  // isInEditor: false, // 保存删除未引入的代码
-  // unocss: true, // unocss 检测&格式化 暂时注释 等配置了unocss再开放为true
-})
+  globalIgnores([
+    'dist/*',
+    'node_modules/*',
+    '**/src/assets/*',
+    '**/src/api/*',
+    '**/public/*',
+    '**/src/plugins/vxeTable/*',
+    '**/ylwiconfont/*',
+    '**/auto-imports.d.ts',
+    '**/components.d.ts',
+  ]),
+])

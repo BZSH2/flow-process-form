@@ -1,140 +1,194 @@
 {
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "jsPlugins": ["./node_modules/@sjzy/oxlint-config/dist/index.js"],
+  "$schema": "https://raw.githubusercontent.com/oxc-project/oxc/main/crates/oxc_linter/schema/oxlintrc.schema.json",
+  "extends": ["oxlint/recommended"],
+  "plugins": ["vue"],
+  "settings": {
+    "vue": {
+      "version": "3.0"
+    }
+  },
+  "rules": {
+    "vue/component-api-style": ["error", ["script-setup", "composition"]],
+    "vue/component-definition-name-casing": ["error", "PascalCase"],
+    "vue/component-name-in-template-casing": ["error", "PascalCase", {
+      "registeredComponentsOnly": false,
+      "ignores": []
+    }],
+    "vue/component-options-name-casing": ["error", "PascalCase"],
+    "vue/custom-event-name-casing": ["error", "camelCase"],
+    "vue/html-button-has-type": "error",
+    "vue/html-comment-content-spacing": "error",
+    "vue/html-comment-indent": "error",
+    "vue/match-component-file-name": ["error", {
+      "extensions": ["vue"],
+      "shouldMatchCase": true
+    }],
+    "vue/max-attributes-per-line": ["error", {
+      "singleline": 3,
+      "multiline": 1
+    }],
+    "vue/multi-word-component-names": "off",
+    "vue/new-line-between-multi-line-property": ["error", {
+      "minLineOfMultilineProperty": 2
+    }],
+    "vue/no-deprecated-v-is": "error",
+    "vue/no-empty-component-block": "error",
+    "vue/no-multiple-objects-in-class": "error",
+    "vue/no-potential-component-option-typo": ["error", {
+      "presets": ["vue", "vue-router", "pinia"]
+    }],
+    "vue/no-reserved-component-names": ["error", {
+      "disallowVueBuiltinComponents": true,
+      "disallowVue3BuiltinComponents": true
+    }],
+    "vue/no-restricted-v-bind": ["error", "key", "ref"],
+    "vue/no-static-inline-styles": ["warn", {
+      "allowBinding": true
+    }],
+    "vue/no-template-target-blank": "error",
+    "vue/no-unused-properties": ["error", {
+      "groups": ["props", "data", "computed", "methods"],
+      "deepData": true
+    }],
+    "vue/no-useless-mustaches": ["error", {
+      "ignoreIncludesComment": true,
+      "ignoreStringEscape": true
+    }],
+    "vue/no-useless-v-bind": "error",
+    "vue/padding-line-between-blocks": "error",
+    "vue/prefer-prop-type-boolean-first": "error",
+    "vue/prefer-separate-static-class": "error",
+    "vue/prefer-true-attribute-shorthand": "error",
+    "vue/require-direct-export": "error",
+    "vue/require-macro-variable-name": "error",
+    "vue/require-name-property": "error",
+    "vue/script-indent": ["error", 2, {
+      "baseIndent": 1,
+      "switchCase": 1
+    }],
+    "vue/sort-keys": ["off"],
+    "vue/v-for-delimiter-style": ["error", "in"],
+    "vue/v-on-function-call": ["error", "never"],
+    "vue/v-on-style": ["error", "shorthand"],
+    "vue/v-bind-style": ["error", "shorthand"],
+    "vue/v-slot-style": ["error", "shorthand"],
+    
+    "complexity": ["warn", 20],
+    "max-depth": ["warn", 4],
+    "max-params": ["warn", 4],
+    "max-statements": ["warn", 30],
+    "no-var": "error",
+    "prefer-const": "error",
+    "no-unused-vars": ["warn", { 
+      "argsIgnorePattern": "^_",
+      "varsIgnorePattern": "^_"
+    }],
+    "no-debugger": "error",
+    "no-console": ["warn", {
+      "allow": ["warn", "error", "info"]
+    }],
+    "prefer-template": "error",
+    "no-useless-concat": "error",
+    "require-await": "warn",
+    "no-promise-executor-return": "error",
+    "eqeqeq": ["error", "always"],
+    "no-implicit-coercion": "off",
+    "arrow-body-style": ["error", "as-needed"],
+    "curly": ["error", "all"],
+    "quotes": ["error", "single", { "avoidEscape": true }],
+    "import/order": ["error", {
+      "groups": ["builtin", "external", "internal", ["parent", "sibling", "index"]],
+      "newlines-between": "always"
+    }],
+    
+    "@typescript-eslint/no-explicit-any": "warn",
+    "@typescript-eslint/explicit-function-return-type": ["warn", {
+      "allowExpressions": true
+    }],
+    "@typescript-eslint/no-unused-vars": ["warn", {
+      "argsIgnorePattern": "^_",
+      "varsIgnorePattern": "^_"
+    }],
+    "@typescript-eslint/ban-ts-comment": "warn",
+    "@typescript-eslint/consistent-type-imports": "error",
+    
+    "no-constant-condition": "error",
+    "no-duplicate-imports": "error",
+    "no-extra-bind": "error",
+    "no-iterator": "error",
+    "no-lone-blocks": "error",
+    "no-loop-func": "error",
+    "no-new-wrappers": "error",
+    "no-proto": "error",
+    "no-return-assign": "error",
+    "no-self-compare": "error",
+    "no-unmodified-loop-condition": "error",
+    "no-useless-call": "error",
+    "no-useless-computed-key": "error",
+    "no-useless-rename": "error",
+    "no-useless-return": "error",
+    
+    "max-len": ["warn", {
+      "code": 100,
+      "ignoreComments": true,
+      "ignoreUrls": true,
+      "ignoreTemplateLiterals": true
+    }],
+    "max-lines": ["warn", 500],
+    "max-lines-per-function": ["warn", 50],
+    
+    "default-case": "error",
+    "default-case-last": "error",
+    "no-alert": "error",
+    "no-eval": "error",
+    "no-implied-eval": "error",
+    "no-with": "error",
+    "radix": "error"
+  },
   "ignorePatterns": [
-    "**/lang/en/**",
-    "**/.DS_Store",
-    "**/node_modules",
-    "dist",
-    "proto",
-    "**/.env.*.local",
-    "**/logs",
-    "**/*.log",
-    "**/npm-debug.log*",
-    "**/yarn-debug.log*",
-    "**/yarn-error.log*",
-    "**/pnpm-debug.log*",
-    "**/.idea",
-    "**/*.suo",
-    "**/*.ntvs*",
-    "**/*.njsproj",
-    "**/*.sln",
-    "**/*.sw?",
-    "**/yarn.lock",
-    "**/package-lock.json",
-    "public/video",
-    "**/*.zip",
-    "**/*.7z",
-    "**/*.rar",
-    ".history",
-    ".vite-inspect/*",
-    "**/.env.local",
-    "**/dist",
-    "**/pnpm-lock.yaml",
-    "**/bun.lockb",
-    "**/output",
-    "**/coverage",
-    "**/temp",
-    "**/.temp",
-    "**/tmp",
-    "**/.tmp",
-    "**/.history",
-    "**/.vitepress/cache",
-    "**/.nuxt",
-    "**/.next",
-    "**/.svelte-kit",
-    "**/.vercel",
-    "**/.changeset",
-    "**/.cache",
-    "**/.output",
-    "**/.vite-inspect",
-    "**/.yarn",
-    "**/vite.config.*.timestamp-*",
-    "**/CHANGELOG*.md",
-    "**/*.min.*",
-    "**/LICENSE*",
-    "**/__snapshots__",
-    "**/auto-import?(s).d.ts",
-    "**/components.d.ts",
-    "/api/**/*.ts",
-    "node_modules",
-    "**/node_modules/**",
-    "src/assets",
-    "src/assets/*",
-    "src/icons",
-    "src/icons/**",
-    "*/src/api/*",
-    "src/api/**/*",
-    "mock",
-    "**/mock/**",
-    "demo.css",
-    "**/demo.css/**",
-    "iconfont.js",
-    "iconfont.css",
-    "**/iconfont/**",
-    "**/ylwiconfont/**",
-    "public",
-    "**/public/**",
-    "**/dist/**",
-    "**/api/**",
-    "/src/plugins/vxeTable/**/*",
+    "node_modules/**",
+    "dist/**",
+    "build/**",
+    "coverage/**",
+    "*.min.js",
+    "*.config.js",
+    "*.d.ts",
+    "public/**",
     "**/__tests__/**",
-    "**/*.spec.ts",
-    "**/*.spec.js",
-    "**/*.test.ts",
-    "**/*.test.js"
+    "**/*.test.*",
+    "**/*.spec.*",
+    "**/*.mock.*",
+    "auto-imports.d.ts",
+    "components.d.ts"
   ],
-  "globals": {
-    "computed": "readonly",
-    "defineEmits": "readonly",
-    "defineExpose": "readonly",
-    "defineProps": "readonly",
-    "onMounted": "readonly",
-    "onUnmounted": "readonly",
-    "reactive": "readonly",
-    "ref": "readonly",
-    "shallowReactive": "readonly",
-    "shallowRef": "readonly",
-    "toRef": "readonly",
-    "toRefs": "readonly",
-    "watch": "readonly",
-    "watchEffect": "readonly"
-  },
-  "plugins": ["node", "jsdoc", "import", "unicorn", "typescript"],
-  "categories": {
-    "correctness": "off",
-    "suspicious": "error",
-    "style": "error",
-    "pedantic": "error",
-    "perf": "error",
-    "restriction": "error"
-  },
-  "env": {
-    "builtin": true,
-    "browser": true,
-    "commonjs": true,
-    "es2024": true,
-    "node": true,
-    "shared-node-browser": true
-  },
   "overrides": [
     {
-      "files": ["**/*.vue"],
+      "files": ["*.vue"],
       "rules": {
-        "sjzy/declaration-order": [
-          "error",
-          {
-            "ignoredHooks": ["useI18n", "useRoute", "useRouter", "useGrpcWeb", "useModalForm"]
-          }
-        ]
+        "max-lines": ["warn", 300],
+        "max-len": ["warn", 120]
       }
     },
     {
-      "files": ["opengrpc/module/*.ts"],
+      "files": ["*.ts", "*.tsx"],
       "rules": {
-        "sjzy/require-grpc-service-comments": "error"
+        "@typescript-eslint/explicit-module-boundary-types": "warn"
+      }
+    },
+    {
+      "files": ["*.test.*", "*.spec.*"],
+      "rules": {
+        "no-console": "off",
+        "max-lines-per-function": "off",
+        "max-statements": "off"
+      }
+    },
+    {
+      "files": ["*.config.*", "*.setup.*"],
+      "rules": {
+        "no-console": "off",
+        "import/order": "off"
       }
     }
-  ],
-  "extends": []
+  ]
 }
