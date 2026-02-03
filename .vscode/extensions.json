@@ -1,11 +1,20 @@
 {
+  // See https://go.microsoft.com/fwlink/?LinkId=827846 to learn about workspace recommendations.
+  // Extension identifier format: ${publisher}.${name}. Example: vscode.csharp
+  // List of extensions which should be recommended for users of this workspace.
   "recommendations": [
-    "Vue.volar",
-    "vitest.explorer",
-    "ms-playwright.playwright",
     "dbaeumer.vscode-eslint",
-    "EditorConfig.EditorConfig",
+    "vincaslt.highlight-matching-tag",
+    "stylelint.vscode-stylelint",
+    "esbenp.prettier-vscode",
+    "wix.vscode-import-cost",
     "oxc.oxc-vscode",
-    "esbenp.prettier-vscode"
-  ]
+    "antfu.pnpm-catalog-lens",
+    "antfu.unocss",
+    "sunshineLx.sjzy-vue3-snippets",
+    "vitest.explorer",
+    "Vue.volar"
+  ],
+  // List of extensions recommended by VS Code that should not be recommended for users of this workspace.
+  "unwantedRecommendations": []
 }

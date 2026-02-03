@@ -1,0 +1,16 @@
+/dist/*
+# */api/*
+mock
+.local
+.output.js
+/node_modules/**
+iconfont
+**/*.svg
+**/*.sh
+.eslintrc-auto-import.json
+auto-imports.d.ts
+components.d.ts
+scripts/*
+/src/plugins/vxeTable/**/*
+/src/api/proto/*
+/src/api/google/*

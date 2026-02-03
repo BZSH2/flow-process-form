@@ -1,10 +1,140 @@
 {
   "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["eslint", "typescript", "unicorn", "oxc", "vue"],
-  "env": {
-    "browser": true
+  "jsPlugins": ["./node_modules/@sjzy/oxlint-config/dist/index.js"],
+  "ignorePatterns": [
+    "**/lang/en/**",
+    "**/.DS_Store",
+    "**/node_modules",
+    "dist",
+    "proto",
+    "**/.env.*.local",
+    "**/logs",
+    "**/*.log",
+    "**/npm-debug.log*",
+    "**/yarn-debug.log*",
+    "**/yarn-error.log*",
+    "**/pnpm-debug.log*",
+    "**/.idea",
+    "**/*.suo",
+    "**/*.ntvs*",
+    "**/*.njsproj",
+    "**/*.sln",
+    "**/*.sw?",
+    "**/yarn.lock",
+    "**/package-lock.json",
+    "public/video",
+    "**/*.zip",
+    "**/*.7z",
+    "**/*.rar",
+    ".history",
+    ".vite-inspect/*",
+    "**/.env.local",
+    "**/dist",
+    "**/pnpm-lock.yaml",
+    "**/bun.lockb",
+    "**/output",
+    "**/coverage",
+    "**/temp",
+    "**/.temp",
+    "**/tmp",
+    "**/.tmp",
+    "**/.history",
+    "**/.vitepress/cache",
+    "**/.nuxt",
+    "**/.next",
+    "**/.svelte-kit",
+    "**/.vercel",
+    "**/.changeset",
+    "**/.cache",
+    "**/.output",
+    "**/.vite-inspect",
+    "**/.yarn",
+    "**/vite.config.*.timestamp-*",
+    "**/CHANGELOG*.md",
+    "**/*.min.*",
+    "**/LICENSE*",
+    "**/__snapshots__",
+    "**/auto-import?(s).d.ts",
+    "**/components.d.ts",
+    "/api/**/*.ts",
+    "node_modules",
+    "**/node_modules/**",
+    "src/assets",
+    "src/assets/*",
+    "src/icons",
+    "src/icons/**",
+    "*/src/api/*",
+    "src/api/**/*",
+    "mock",
+    "**/mock/**",
+    "demo.css",
+    "**/demo.css/**",
+    "iconfont.js",
+    "iconfont.css",
+    "**/iconfont/**",
+    "**/ylwiconfont/**",
+    "public",
+    "**/public/**",
+    "**/dist/**",
+    "**/api/**",
+    "/src/plugins/vxeTable/**/*",
+    "**/__tests__/**",
+    "**/*.spec.ts",
+    "**/*.spec.js",
+    "**/*.test.ts",
+    "**/*.test.js"
+  ],
+  "globals": {
+    "computed": "readonly",
+    "defineEmits": "readonly",
+    "defineExpose": "readonly",
+    "defineProps": "readonly",
+    "onMounted": "readonly",
+    "onUnmounted": "readonly",
+    "reactive": "readonly",
+    "ref": "readonly",
+    "shallowReactive": "readonly",
+    "shallowRef": "readonly",
+    "toRef": "readonly",
+    "toRefs": "readonly",
+    "watch": "readonly",
+    "watchEffect": "readonly"
   },
+  "plugins": ["node", "jsdoc", "import", "unicorn", "typescript"],
   "categories": {
-    "correctness": "error"
-  }
+    "correctness": "off",
+    "suspicious": "error",
+    "style": "error",
+    "pedantic": "error",
+    "perf": "error",
+    "restriction": "error"
+  },
+  "env": {
+    "builtin": true,
+    "browser": true,
+    "commonjs": true,
+    "es2024": true,
+    "node": true,
+    "shared-node-browser": true
+  },
+  "overrides": [
+    {
+      "files": ["**/*.vue"],
+      "rules": {
+        "sjzy/declaration-order": [
+          "error",
+          {
+            "ignoredHooks": ["useI18n", "useRoute", "useRouter", "useGrpcWeb", "useModalForm"]
+          }
+        ]
+      }
+    },
+    {
+      "files": ["opengrpc/module/*.ts"],
+      "rules": {
+        "sjzy/require-grpc-service-comments": "error"
+      }
+    }
+  ],
+  "extends": []
 }
