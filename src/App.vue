@@ -5,7 +5,7 @@
   <p>
     Visit <a href="https://vuejs.org/" target="_blank" rel="noopener">vuejs.org</a> to read the
   </p>
-  搜索
+  搜索111
 </template>
 
 <style scoped></style>
