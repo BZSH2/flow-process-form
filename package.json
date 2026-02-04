@@ -17,7 +17,6 @@
     "lint:oxlint": "oxlint . --fix",
     "lint:eslint": "eslint . --fix --cache",
     "lint": "eslint .",
-    "oxlint": "oxlint . --type-aware",
     "lint:fix": "eslint . --fix",
     "lint:js": "eslint . --ext .js,.jsx,.ts,.tsx,.vue",
     "lint:style": "stylelint --fix  **/*.{css,less,scss.vue}",
@@ -27,9 +26,8 @@
     "typecheck": "node --max-old-space-size=4096 node_modules/vue-tsc/bin/vue-tsc.js --noEmit",
     "reinstall": "rimraf node_modules && npm run bootstrap",
     "lint:lint-staged": "lint-staged",
-    "lint:all": "pnpm run oxlint && pnpm run lint",
-    "cz": "git-cz",
-    "commit": "git-cz",
+    "lint:all": "npm run lint:oxlint && npm run lint",
+    "cz": "git pull && git add . && git-cz",
     "prepare": "husky"
   },
   "config": {

@@ -1,0 +1,39 @@
+name: Deploy CI/CD
+
+on:
+  push:
+    branches:
+      - master # 设置触发部署的分支为 main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest # 使用 Ubuntu 最新版本运行工作流
+
+    steps:
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22' # 设定 Node.js 版本为 16 (根据你的项目需要选择版本)
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: latest  # 或指定版本如 8.15.0
+
+      - name: Install dependencies (如果需要构建)
+        run: pnpm install
+
+      - name: Build project (如果需要构建)
+        run: pnpm build
+          
+      - name: Deploy # 部署
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          force_orphan: true  # 原 force
+          # 清理文件（false表示清理）
+          keep_files: false  # 原 clean=true
+          publish_branch: gh-pages # 部署后提交到那个分支
+          # 路径参数更新
+          publish_dir: dist  # 原 folder/target-folder
+          # destination_dir: .   # 目标子目录（默认为仓库根目录）
+          github_token: ${{ secrets.VUE_PHOTO_SHOP }}
