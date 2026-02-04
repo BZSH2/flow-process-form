@@ -8,7 +8,7 @@ import typeScriptParser from '@typescript-eslint/parser'
 
 
 export default defineConfig([
-  unocss,
+  unocss as any,
   // ...pluginJsonc.configs['flat/recommended-with-jsonc'],
   // ...pluginVue.configs['flat/recommended'],
   // Package.json 专用配置
@@ -19,7 +19,7 @@ export default defineConfig([
     },
     name: 'jsonc/package-json',
     plugins: {
-      jsonc: pluginJsonc,
+      jsonc: pluginJsonc as any,
     },
     rules: {
       'jsonc/sort-array-values': [
