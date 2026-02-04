@@ -10,6 +10,9 @@ jobs:
     runs-on: ubuntu-latest # 使用 Ubuntu 最新版本运行工作流
 
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
