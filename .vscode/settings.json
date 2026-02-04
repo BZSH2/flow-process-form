@@ -1,0 +1,102 @@
+{
+  "prettier.enable": true,
+  "eslint.enable": true,
+  "oxc.enable": true,
+  "stylelint.enable": true,
+  "css.validate": false,
+  "less.validate": false,
+  "scss.validate": false,
+  "eslint.validate": [
+    "javascript",
+    "javascriptreact",
+    "typescript",
+    "typescriptreact",
+    "vue",
+    "html",
+    "markdown",
+    "json",
+    "jsonc",
+    "yaml"
+  ],
+  "stylelint.validate": ["css", "less", "postcss", "scss", "vue", "sass"],
+  "stylelint.customSyntax": "postcss-html",
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit",
+    "source.fixAll.oxc": "explicit",
+    "source.fixAll.stylelint": "explicit",
+    "source.organizeImports": "never"
+  },
+  "files.associations": {
+    "*.css": "css"
+  },
+  "editor.formatOnSave": false,
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "prettier.endOfLine": "lf",
+  "[javascript,vue,typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[css,scss,sass,less]": {
+    "editor.defaultFormatter": "stylelint.vscode-stylelint"
+  },
+  "references.preferredLocation": "peek",
+  "prettier.requireConfig": true,
+  "eslint.codeActionsOnSave.rules": null,
+  "eslint.useFlatConfig": true,
+  // Silent the stylistic rules in you IDE, but still auto fix them
+  "eslint.rules.customizations": [
+    {
+      "rule": "style/*",
+      "severity": "off"
+    },
+    {
+      "rule": "*-indent",
+      "severity": "off"
+    },
+    {
+      "rule": "*-spacing",
+      "severity": "off"
+    },
+    {
+      "rule": "*-spaces",
+      "severity": "off"
+    },
+    {
+      "rule": "*-order",
+      "severity": "off"
+    },
+    {
+      "rule": "*-dangle",
+      "severity": "off"
+    },
+    {
+      "rule": "*-newline",
+      "severity": "off"
+    },
+    {
+      "rule": "*quotes",
+      "severity": "off"
+    },
+    {
+      "rule": "*semi",
+      "severity": "off"
+    }
+  ],
+  "search.followSymlinks": false,
+  // File collapse
+  "explorer.fileNesting.enabled": true,
+  "explorer.fileNesting.expand": false,
+  "explorer.fileNesting.patterns": {
+    "*.ts": "$(capture).test.ts, $(capture).test.tsx, $(capture).spec.ts, $(capture).spec.tsx, $(capture).d.ts",
+    "*.tsx": "$(capture).test.ts, $(capture).test.tsx, $(capture).spec.ts, $(capture).spec.tsx,$(capture).d.ts",
+    "*.env": "$(capture).env.*,.editorconfig",
+    "README.md": "README*,CHANGELOG*,LICENSE,CNAME,Dockerfile",
+    "package.json": "pnpm-lock.yaml,pnpm-workspace.yaml,.gitattributes,.gitignore,.gitpod.yml,.npmrc,.browserslistrc,.node-version,.git*,.tazerc.json,tsconfig.json",
+    "eslint.config.ts": ".editorconfig, .eslintignore,.prettierignore,.stylelintignore,.commitlintrc.*,.prettierrc.*,stylelint.config.*,.lintstagedrc.mjs,cspell.json,prettier.config.js,.oxlintrc.json,.oxfmtrc.json",
+    "docker-compose.product.yml": ".dockerignore,nginx.conf",
+    "vite.config.ts": "unocss.config.ts,vitest.config.ts,postcss.config.js,tailwind.config.js,commitlint.config.ts"
+  },
+  "vue.editor.focusMode": false,
+  "vue.editor.reactivityVisualization": true,
+  "vue.editor.templateInterpolationDecorators": true,
+  "i18n-ally.localesPaths": ["src/i18n", "src/i18n/lang", "src/plugins/language"]
+}

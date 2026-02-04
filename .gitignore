@@ -1,22 +1,21 @@
-# Logs
+.DS_Store
+node_modules
+/dist
+/proto
+scripts/chinese-sentences.json
+
+# local env files
+.env.*.local
+
+# Log files
 logs
 *.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
-lerna-debug.log*
-
-node_modules
-.DS_Store
-dist
-dist-ssr
-coverage
-*.local
 
 # Editor directories and files
-.vscode/*
-!.vscode/extensions.json
 .idea
 *.suo
 *.ntvs*
@@ -24,19 +23,19 @@ coverage
 *.sln
 *.sw?
 
-*.tsbuildinfo
+# Lock files
+yarn.lock
+# pnpm-lock.yaml
+package-lock.json
 
-.eslintcache
 
-# Cypress
-/cypress/videos/
-/cypress/screenshots/
+public/video
+*.zip
+*.7z
+*.rar
+/.history
 
-# Vitest
-__screenshots__/
-
-# Vite
-*.timestamp-*-*.mjs
-
-test-results/
-playwright-report/
+.vite-inspect/*
+.env.local
+.nuxt
+.nuxt/*

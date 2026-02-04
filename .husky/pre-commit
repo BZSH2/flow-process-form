@@ -1,1 +1,40 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+echo "🚀 开始代码检查..."
+
+# 获取暂存的文件
+STAGED_FILES=$(git diff --cached --name-only --diff-filter=ACM)
+
+if [ -z "$STAGED_FILES" ]; then
+  echo "✅ 没有需要检查的文件"
+  exit 0
+fi
+
+echo "📁 检查文件:"
+echo "$STAGED_FILES" | sed 's/^/  /'
+
+# 1. 运行 lint-staged
+echo "🔍 运行代码检查和格式化..."
 npm run lint:all
+
+if [ $? -ne 0 ]; then
+  echo "❌ 代码检查失败，请修复以上问题"
+  exit 1
+fi
+
+# 2. 如果有修改，重新添加文件
+git add $STAGED_FILES 2>/dev/null || true
+
+# 3. TypeScript 类型检查
+echo "🔍 运行 TypeScript 类型检查..."
+if [ -f "node_modules/.bin/vue-tsc" ]; then
+  npm run typecheck
+  
+  if [ $? -ne 0 ]; then
+    echo "❌ TypeScript 类型检查失败"
+    exit 1
+  fi
+fi
+
+echo "✅ 所有检查通过！"
