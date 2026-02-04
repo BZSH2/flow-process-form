@@ -30,7 +30,7 @@ jobs:
         run: pnpm build
           
       - name: Deploy # 部署
-        uses: peaceiris/actions-gh-pages@v3
+        uses: peaceiris/actions-gh-pages@v4
         with:
           force_orphan: true  # 原 force
           # 清理文件（false表示清理）
