@@ -36,4 +36,4 @@ jobs:
           # 路径参数更新
           publish_dir: dist  # 原 folder/target-folder
           # destination_dir: .   # 目标子目录（默认为仓库根目录）
-          github_token: ${{ secrets.VUE_PHOTO_SHOP }}
+          github_token: ${{ secrets.FLOW_PROCESS_FORM_TOKEN }}
