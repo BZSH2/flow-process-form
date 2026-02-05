@@ -111,6 +111,8 @@
     "ylwiconfont",
     "VITE",
     "BUILDENV",
-    "styl"
+    "styl",
+    "intlify",
+    "esno"
   ]
 }

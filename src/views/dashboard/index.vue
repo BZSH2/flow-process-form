@@ -1,6 +1,6 @@
 <template>
   <div>
-    <ElButton type="primary">Primary Button</ElButton>
+    <ElButton type="primary">{{ $t('测试') }}</ElButton>
     <Icon name="aixin" />
   </div>
 </template>

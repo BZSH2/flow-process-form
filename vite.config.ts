@@ -9,6 +9,7 @@ import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 import { createViteProxy } from './build'
 import globConfig from './src/config/index'
 import { createSvgIconsPlugin } from 'vite-plugin-svg-icons'
+import VueI18nPlugin from '@intlify/unplugin-vue-i18n/vite'
 
 // https://vite.dev/config/
 export default defineConfig(({ mode, command }) => {
@@ -40,6 +41,17 @@ export default defineConfig(({ mode, command }) => {
         // 指定symbolId格式
         symbolId: 'icon-[dir]-[name]',
       }),
+       VueI18nPlugin({
+        include: [
+          path.resolve(process.cwd(), 'src/i18n/lang/**/*.json'), // 语言文件路径
+          // path.resolve(process.cwd(), 'src/**/*.vue')    // 自动提取Vue文件
+        ],
+        runtimeOnly: false,
+        compositionOnly: true,
+        fullInstall: true,
+        defaultSFCLang: 'yaml', // 支持SFC自定义块
+        globalSFCScope: true
+      })
     ],
     resolve: {
       alias: {
