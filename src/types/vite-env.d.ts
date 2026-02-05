@@ -1,4 +1,5 @@
 /// <reference types="vite/client" />
+/// <reference types="vite-plugin-svg-icons/client" />
 
 interface ImportMetaEnv {
   /** 开发环境是否登录 */

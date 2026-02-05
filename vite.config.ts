@@ -1,4 +1,5 @@
 import { fileURLToPath, URL } from 'node:url'
+import path from 'node:path'
 import { defineConfig, loadEnv } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import vueJsx from '@vitejs/plugin-vue-jsx'
@@ -7,7 +8,7 @@ import Components from 'unplugin-vue-components/vite'
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 import { createViteProxy } from './build'
 import globConfig from './src/config/index'
-import { resolve } from 'path'
+import { createSvgIconsPlugin } from 'vite-plugin-svg-icons'
 
 // https://vite.dev/config/
 export default defineConfig(({ mode, command }) => {
@@ -26,8 +27,18 @@ export default defineConfig(({ mode, command }) => {
       }),
       Components({
         resolvers: [ElementPlusResolver()],
+        // 指定组件位置，默认是 src/components
+        dirs: ['src/icons'],
+        // 组件的有效文件扩展名
+        extensions: ['vue'],
         // 设置 d.ts 文件输出路径
         dts: 'src/types/components.d.ts', // 指定路径
+      }),
+      createSvgIconsPlugin({
+        // 指定需要缓存的图标文件夹
+        iconDirs: [path.resolve(process.cwd(), 'src/icons/svg')],
+        // 指定symbolId格式
+        symbolId: 'icon-[dir]-[name]',
       }),
     ],
     resolve: {

@@ -13,6 +13,7 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     ElButton: typeof import('element-plus/es')['ElButton']
+    Icon: typeof import('./../icons/Icon.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
   }
@@ -21,6 +22,7 @@ declare module 'vue' {
 // For TSX support
 declare global {
   const ElButton: typeof import('element-plus/es')['ElButton']
+  const Icon: typeof import('./../icons/Icon.vue')['default']
   const RouterLink: typeof import('vue-router')['RouterLink']
   const RouterView: typeof import('vue-router')['RouterView']
 }
