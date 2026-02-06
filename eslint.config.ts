@@ -119,6 +119,7 @@ export default defineConfig([
       vue: pluginVue,
     },
     rules: {
+      'no-console': 'off',
       'vue/sort-keys': ['off'],
       'vue/v-on-event-hyphenation': [
         'error',
