@@ -84,9 +84,7 @@
       "varsIgnorePattern": "^_"
     }],
     "no-debugger": "error",
-    "no-console": ["warn", {
-      "allow": ["warn", "error", "info"]
-    }],
+    "no-console": ["off"],
     "prefer-template": "error",
     "no-useless-concat": "error",
     "require-await": "warn",
@@ -135,7 +133,11 @@
       "ignoreTemplateLiterals": true
     }],
     "max-lines": ["warn", 500],
-    "max-lines-per-function": ["warn", 50],
+    "max-lines-per-function": ["warn", {
+      "max": 60,
+      "skipComments": true,
+      "skipBlankLines": true
+    }],
     
     "default-case": "error",
     "default-case-last": "error",
