@@ -6,8 +6,7 @@ import { defaultLang, type LanguageType } from '@/config'
 
 // 获取用户浏览器首选语言
 function getBrowserLocale() {
-  const navigatorLocale = navigator.language
-  return null
+  return navigator.language
 }
 
 // 保存语言设置

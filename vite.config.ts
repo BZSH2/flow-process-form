@@ -44,7 +44,6 @@ export default defineConfig(({ mode, command }) => {
        VueI18nPlugin({
         include: [
           path.resolve(process.cwd(), 'src/i18n/lang/**/*.json'), // 语言文件路径
-          // path.resolve(process.cwd(), 'src/**/*.vue')    // 自动提取Vue文件
         ],
         runtimeOnly: false,
         compositionOnly: true,

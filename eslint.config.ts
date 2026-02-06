@@ -120,6 +120,11 @@ export default defineConfig([
     },
     rules: {
       'no-console': 'off',
+      'max-lines-per-function': ['warn', {
+        max: 60,           // 增加到60行
+        skipComments: true, // 跳过注释行
+        skipBlankLines: true // 跳过空行
+      }],
       'vue/sort-keys': ['off'],
       'vue/v-on-event-hyphenation': [
         'error',

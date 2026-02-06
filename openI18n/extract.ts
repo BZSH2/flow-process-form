@@ -119,7 +119,7 @@ export class I18nExtractor {
         translatedText = res.text
       } catch (e) {
         // 翻译失败降级为key
-        // console.error(`Translation failed for ${key}:`, e)
+        console.error(`Translation failed for ${key}:`, e)
       }
 
       keys.forEach((k, index) => {
