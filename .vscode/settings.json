@@ -113,6 +113,10 @@
     "BUILDENV",
     "styl",
     "intlify",
-    "esno"
+    "esno",
+    "Français",
+    "Deutsch",
+    "Español",
+    "Русский"
   ]
 }
