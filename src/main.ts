@@ -5,7 +5,7 @@ import 'virtual:svg-icons-register'
 
 import App from './App.vue'
 import router from './router'
-import { i18n } from '@/i18n'
+import i18n from '@/i18n'
 
 import './styles/index.scss'
 
