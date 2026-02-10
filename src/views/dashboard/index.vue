@@ -1,10 +1,17 @@
 <script setup lang="ts">
 import { setLang } from '@/i18n'
 import { langDict } from '@/config';
+import axios from 'axios';
 
 function changeLang(code: string) {
   setLang(code)
 }
+
+onMounted(() => {
+  axios.get('/apiPets/pets').then(res => {
+    console.log(res)
+  })
+})
 </script>
 
 <template>

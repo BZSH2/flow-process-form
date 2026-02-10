@@ -1,4 +1,5 @@
 export default {
+  verbose: true,
   "*.{js,jsx,ts,tsx,vue}": [
     "prettier --write",
     "oxlint --fix",
