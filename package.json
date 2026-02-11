@@ -30,7 +30,9 @@
     "cz": "git pull && git add . && git-cz",
     "prepare": "husky",
     "openI18n": "esno openI18n/index.ts",
-    "openApi": "esno openApi/index.ts"
+    "openApi": "esno openApi/index.ts",
+    "changelog": "changelogen --output CHANGELOG.md",
+    "changelog:release": "changelogen --release --output CHANGELOG.md"
   },
   "config": {
     "commitizen": {
@@ -67,6 +69,7 @@
     "@vue/eslint-config-typescript": "^14.6.0",
     "@vue/test-utils": "^2.4.6",
     "@vue/tsconfig": "^0.8.1",
+    "changelogen": "^0.6.0",
     "cz-git": "^1.12.0",
     "eslint": "^9.39.2",
     "eslint-config-prettier": "^10.1.8",

@@ -1,0 +1,16 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+npm run -s changelog
+
+if git diff --quiet -- CHANGELOG.md; then
+  exit 0
+fi
+
+git add CHANGELOG.md
+
+if git diff --cached --quiet -- CHANGELOG.md; then
+  exit 0
+fi
+
+git commit -m "chore: update changelog" --no-verify

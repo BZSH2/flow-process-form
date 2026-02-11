@@ -24,7 +24,7 @@ export default defineConfig(({ mode, command }) => {
         imports: ['vue', 'vue-router', 'pinia'],
         resolvers: [ElementPlusResolver()],
         // 设置 d.ts 文件输出路径
-        dirs: ['src/composables'],
+        dirs: ['src/composables', '!src/composables/index.ts'],
         dts: 'src/types/auto-imports.d.ts', // 指定路径
       }),
       Components({

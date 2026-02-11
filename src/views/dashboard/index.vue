@@ -2,16 +2,16 @@
 import { setLang } from '@/i18n'
 import { langDict } from '@/config';
 
-import { postOpenApiJSON } from '@/api/google'
+// import { postOpenApiJSON } from '@/api/google'
 
 function changeLang(code: string) {
   setLang(code)
 }
 
 onMounted(() => {
-  postOpenApiJSON({
-    coke: '[{"prefix":"pets","service":[]},{"prefix":"store","service":[]}] ',
-  })
+  // postOpenApiJSON({
+  //   coke: '[{"prefix":"pets","service":[]},{"prefix":"store","service":[]}] ',
+  // })
 })
 </script>
 
