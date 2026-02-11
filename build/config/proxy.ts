@@ -12,10 +12,11 @@ export function createViteProxy(): Record<string, string | ProxyOptions> | undef
       secure: false,
       rewrite: (path) => path.replace(/^\/apiPets/, ''),
     },
-    '/setList': {
-      target: 'https://localhost:3352/',
+    '/openApi': {
+      target: 'https://m1.apifoxmock.com/m1/7827428-7575526-default',
       changeOrigin: true, //  target是域名的话，需要这个参数，
       secure: false,
+      rewrite: (path) => path.replace(/^\/openApi/, ''),
     },
   }
 }

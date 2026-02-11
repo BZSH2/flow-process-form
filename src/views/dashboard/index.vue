@@ -1,15 +1,16 @@
 <script setup lang="ts">
 import { setLang } from '@/i18n'
 import { langDict } from '@/config';
-import axios from 'axios';
+
+import { postOpenApiJSON } from '@/api/google'
 
 function changeLang(code: string) {
   setLang(code)
 }
 
 onMounted(() => {
-  axios.get('/apiPets/pets').then(res => {
-    console.log(res)
+  postOpenApiJSON({
+    coke: '[{"prefix":"pets","service":[]},{"prefix":"store","service":[]}] ',
   })
 })
 </script>
