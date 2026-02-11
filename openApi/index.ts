@@ -32,41 +32,41 @@ class OpenApi {
     }
   }
 
-  private async generateApi(apiSpec: any, outputDir: string) {
-    const title = apiSpec.info?.title || 'default-api';
-    const safeTitle = String(title).replace(/[^a-zA-Z0-9-_]/g, '_');
-    const tempFile = path.resolve(process.cwd(), `openapi-${safeTitle}-${Date.now()}.json`);
+  // private async generateApi(apiSpec: any, outputDir: string) {
+  //   const title = apiSpec.info?.title || 'default-api';
+  //   const safeTitle = String(title).replace(/[^a-zA-Z0-9-_]/g, '_');
+  //   const tempFile = path.resolve(process.cwd(), `openapi-${safeTitle}-${Date.now()}.json`);
 
-    await fs.promises.writeFile(tempFile, JSON.stringify(apiSpec, null, 2));
+  //   await fs.promises.writeFile(tempFile, JSON.stringify(apiSpec, null, 2));
 
-    try {
-      // await generate({
-      //   input: {
-      //     target: tempFile,
-      //   },
-      //   output: {
-      //     target: outputDir,
-      //     client: 'axios',
-      //     mode: 'tags-split', // 按 tag 拆分
-      //     clean: true,
-      //     prettier: true,
-      //     override: {
-      //       mutator: {
-      //         // 👇 指向你的本地 request 函数
-      //         path: path.resolve(process.cwd(), 'src/utils/request/orval-mutator.ts'),
-      //         name: 'request', // 必须与导出名一致
-      //       },
-      //     },
-      //   },
-      // });
+  //   try {
+  //     // await generate({
+  //     //   input: {
+  //     //     target: tempFile,
+  //     //   },
+  //     //   output: {
+  //     //     target: outputDir,
+  //     //     client: 'axios',
+  //     //     mode: 'tags-split', // 按 tag 拆分
+  //     //     clean: true,
+  //     //     prettier: true,
+  //     //     override: {
+  //     //       mutator: {
+  //     //         // 👇 指向你的本地 request 函数
+  //     //         path: path.resolve(process.cwd(), 'src/utils/request/orval-mutator.ts'),
+  //     //         name: 'request', // 必须与导出名一致
+  //     //       },
+  //     //     },
+  //     //   },
+  //     // });
 
-      console.log(`✅ Generated API for "${apiSpec.info?.title}"`);
-    } finally {
-      try {
-        await fs.promises.unlink(tempFile);
-      } catch {}
-    }
-  }
+  //     console.log(`✅ Generated API for "${apiSpec.info?.title}"`);
+  //   } finally {
+  //     try {
+  //       await fs.promises.unlink(tempFile);
+  //     } catch {}
+  //   }
+  // }
 
   async open() {
     console.log('📡 Fetching OpenAPI specs from Apifox...');
@@ -85,7 +85,7 @@ class OpenApi {
       const output = path.resolve(this.config.output, safeTitle);
 
       this.generateFolder(output);
-      await this.generateApi(api, output);
+      // await this.generateApi(api, output);
     }
 
     console.log('🎉 All APIs generated successfully!');
