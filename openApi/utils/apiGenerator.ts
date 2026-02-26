@@ -1,4 +1,4 @@
-/* eslint-disable max-lines-per-function */
+
 /**
  * api 文件生成 相关
  */
@@ -9,7 +9,7 @@ import path from 'path'
 import fs from 'fs'
 import url from 'url'
 import ReservedDict from 'reserved-words'
-import * as nunjucks from 'nunjucks'
+import nunjucks from 'nunjucks'
 import {
   isReferenceObject,
   isSchemaObject,
@@ -31,12 +31,15 @@ export type TypescriptFileType =
   | 'serviceController'
   | 'serviceIndex'
   | 'financeCenter'
-  | 'uniapptemplate'
 
 export type TagAPIDataType = Record<string, APIDataType[]>
 
 const __filename = url.fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+const DEFAULT_SCHEMA: SchemaObject = {
+  type: 'object',
+  properties: { id: { type: 'number' } },
+}
 
 
 export default class ApiGenerator {
@@ -54,7 +57,12 @@ export default class ApiGenerator {
     this.openAPIData = openAPIData
   }
 
-  // 类型声明过滤关键字
+  // 获取 nunjucks模版
+  private getTemplate(type: TypescriptFileType): string {
+    return fs.readFileSync(path.join(this.templatesFolder, `${type}.njk`), 'utf8')
+  }
+
+  // 名称声明过滤关键字
   private resolveTypeName(name: string) {
     // 判断是不是js关键字
     if (ReservedDict.check(name)) {return `__openAPI__${name}`}
@@ -71,56 +79,144 @@ export default class ApiGenerator {
     return pinyin(name.replace(/\s/g, ''), { style: 'name' })
   }
 
-  private resolveObject(schema: SchemaObject | ReferenceObject) {
-     // 判断一个 OpenAPI 对象是否是一个 $ref 引用对象（Reference Object）
-    if (isReferenceObject(schema) && schema.$ref) {
-      // return this.resolveRefObject(schema)
+  // d.ts文件生成
+  private async genFileFromTemplate(
+    fileName: string,
+    type: any,
+    output: string,
+    params: Record<string, any>
+  ): Promise<boolean> {
+    try {
+      // 获取 nunjucks 文件模版
+      const template:string = this.getTemplate(type)
+      // 设置输出不转义
+      nunjucks.configure({
+        autoescape: false,
+      })
+
+      console.log('aaaaaaaaa', nunjucks.renderString(template, params))
+      fs.writeFileSync(`${output}/${fileName}`, nunjucks.renderString(template, params), 'utf8')
+      return true
+    } catch (error) {
+      console.error('[GenSDK] file gen fail:', fileName, 'type:', type)
+      throw error
     }
-
-    // 枚举类型
-    if (isSchemaObject(schema) && schema.enum) {
-      // return this.resolveEnumObject(schemaObject)
-    }
-
-    // 继承类型
-    if (isSchemaObject(schema) && schema.allOf && schema.allOf.length) {
-
-    }
-      // return this.resolveAllOfObject(schemaObject)
-
-    // 对象类型
-    if (isSchemaObject(schema) && schema.properties)
-      {return this.resolveProperties(schema)}
-
-    // 数组类型
-    if (isSchemaObject(schema) && schema.items && schema.type === 'array') {}
-      // return this.resolveArray(schemaObject)
   }
 
-  private resolveProperties(schema:SchemaObject) {
+  /**
+ * 解析 OpenAPI Schema 对象，根据不同类型进行相应处理
+ * 处理优先级：引用 > 枚举 > 组合类型 > 数组 > 对象 > 基本类型
+ */
+// eslint-disable-next-line max-lines-per-function
+private resolveObject(schema: SchemaObject | ReferenceObject) {
+  // 1. 引用类型
+  if (isReferenceObject(schema)) {
+    console.log(`引用类型: ${schema.$ref}`);
     return {
-      props: [this.getProps(schema)],
+      type: 'reference',
+      ref: schema.$ref,
+      schema: schema
+    };
+  }
+
+  // 确保是 SchemaObject
+  if (!isSchemaObject(schema)) {
+    return {
+      type: 'unknown',
+      schema: schema
+    };
+  }
+
+  // 2. 枚举类型
+  if (schema.enum && schema.enum.length > 0) {
+    console.log(`枚举类型: ${JSON.stringify(schema.enum)}`);
+    return {
+      type: 'enum',
+      enumValues: schema.enum,
+      schema: schema
+    };
+  }
+
+  // 3. 组合类型
+  if (schema.allOf && schema.allOf.length > 0) {
+    console.log(`组合类型(allOf): ${schema.allOf.length} 个子模式`);
+    return {
+      type: 'allOf',
+      subSchemas: schema.allOf,
+      schema: schema
+    };
+  }
+
+  if (schema.oneOf && schema.oneOf.length > 0) {
+    console.log(`组合类型(oneOf): ${schema.oneOf.length} 个选项`);
+    return {
+      type: 'oneOf',
+      subSchemas: schema.oneOf,
+      schema: schema
+    };
+  }
+
+  if (schema.anyOf && schema.anyOf.length > 0) {
+    console.log(`组合类型(anyOf): ${schema.anyOf.length} 个选项`);
+    return {
+      type: 'anyOf',
+      subSchemas: schema.anyOf,
+      schema: schema
+    };
+  }
+
+  // 4. 数组类型
+  if (schema.type === 'array' && schema.items) {
+    console.log('数组类型');
+    return {
+      type: 'array',
+      items: schema.items,
+      schema: schema
+    };
+  }
+
+  // 5. 对象类型
+  if (schema.type === 'object' || schema.properties) {
+    console.log(`对象类型: ${Object.keys(schema.properties || {}).length} 个属性`);
+    return {
+      type: 'object',
+      props: this.getProps(schema)
     }
   }
 
- getRefName(refObject: any): string {
-  if (typeof refObject !== 'object' || !refObject.$ref) {return refObject}
+  // 6. 基本类型
+  if (schema.type) {
+    const baseType = Array.isArray(schema.type)
+      ? schema.type.join('|')
+      : schema.type as string;
 
-  const refPaths = refObject.$ref.split('/')
-  return this.resolveTypeName(refPaths[refPaths.length - 1]) as string
+    console.log(`基本类型: ${baseType}${schema.format ? `(${schema.format})` : ''}`);
+
+    return {
+      type: 'basic',
+      dataType: baseType,
+      format: schema.format,
+      schema: schema
+    };
+  }
+
+  // 7. 未识别类型
+  console.warn('未识别的 Schema 类型:', schema);
+  return {
+    type: 'unknown',
+    schema: schema
+  };
 }
-
-    // 获取 TS 类型的属性列表
-  getProps(schemaObject: SchemaObject) {
-    const requiredPropKeys = schemaObject?.required ?? false
-    const a = isSchemaObject(schemaObject.properties) ? schemaObject.properties : []
+  private getProps(schema: SchemaObject) {
+    const requiredPropKeys = schema?.required ?? false
+    const a = isSchemaObject(schema.properties || {}) ? schema.properties : []
     return a
-      ? Object.keys(schemaObject.properties).map(propName => {
+      ? Object.keys(schema.properties || {}).map((propName) => {
           const schema: SchemaObject = (a && a[propName]) || DEFAULT_SCHEMA
           return {
             ...schema,
             name: propName,
-            type: this.getType(schema),
+            // type: getType(schema),
             desc: [schema.title, schema.description].filter(s => s).join(' '),
             // 如果没有 required 信息，默认全部是非必填
             required: requiredPropKeys ? requiredPropKeys.includes(propName) : false,
@@ -129,143 +225,16 @@ export default class ApiGenerator {
       : []
   }
 
-  getType(
-  schemaObject: SchemaObject | ReferenceObject | undefined,
-  namespace: string = ''
-): string {
-  if (schemaObject === undefined || schemaObject === null) {return 'any'}
-
-  if (typeof schemaObject !== 'object') {return schemaObject}
-  // 判断schemaObject是否是ReferenceObject类型
-  // if (schemaObject.$ref)
-  if (isReferenceObject(schemaObject))
-    {return [namespace, this.getRefName(schemaObject)].filter(s => s).join('.')}
-
-  let { type } = schemaObject as any
-
-  const numberEnum = [
-    'int64',
-    'integer',
-    'long',
-    'float',
-    'double',
-    'number',
-    'int',
-    'float',
-    'double',
-    'int32',
-    'int64',
-  ]
-
-  const dateEnum = ['Date', 'date', 'dateTime', 'date-time', 'datetime']
-
-  const stringEnum = ['string', 'email', 'password', 'url', 'byte', 'binary']
-
-  // if (numberEnum.includes(schemaObject.format)) {
-  //   type = 'number';
-  // }
-
-  if (schemaObject.enum) {type = 'enum'}
-
-  if (numberEnum.includes(type)) {return 'number'}
-
-  if (dateEnum.includes(type)) {return 'Date'}
-
-  if (stringEnum.includes(type)) {return 'string'}
-
-  if (type === 'boolean') {return 'boolean'}
-
-  if (type === 'array') {
-    const { items } = schemaObject
-    // if (schemaObject.schema)
-    //   items = schemaObject.schema.items
-
-    if (Array.isArray(items)) {
-      const arrayItemType = (items as any)
-        .map(subType => this.getType(subType.schema || subType, namespace))
-        .toString()
-      return `[${arrayItemType}]`
-    }
-    const arrayType = this.getType(items as SchemaObject, namespace)
-    return arrayType.includes(' | ') ? `(${arrayType})[]` : `${arrayType}[]`
-  }
-
-  if (type === 'enum') {
-    return Array.isArray(schemaObject.enum)
-      ? Array.from(
-          new Set(
-            schemaObject.enum.map(v =>
-              typeof v === 'string' ? `"${v.replace(/"/g, '"')}"` : this.getType(v)
-            )
-          )
-        ).join(' | ')
-      : 'string'
-  }
-
-  if (schemaObject.oneOf && schemaObject.oneOf.length)
-    {return schemaObject.oneOf.map(item => this.getType(item, namespace)).join(' | ')}
-
-  if (schemaObject.allOf && schemaObject.allOf.length)
-    {return `(${schemaObject.allOf.map(item => this.getType(item, namespace)).join(' & ')})`}
-
-  if (schemaObject.type === 'object' || schemaObject.properties) {
-    if (!Object.keys(schemaObject.properties || {}).length) {return 'Record<string, any>'}
-
-    return `{ ${Object.keys(schemaObject.properties)
-      .map(key => {
-        const required =
-          'required' in (schemaObject.properties[key] || {})
-            ? ((schemaObject.properties[key] || {}) as any).required
-            : false
-        /**
-         * 将类型属性变为字符串，兼容错误格式如：
-         * 3d_tile(数字开头)等错误命名，
-         * 在后面进行格式化的时候会将正确的字符串转换为正常形式，
-         * 错误的继续保留字符串。
-         */
-        return `'${key}'${required ? '' : '?'}: ${this.getType(schemaObject.properties && schemaObject.properties[key], namespace)}; `
-      })
-      .join('')}}`
-  }
-  return 'any'
-}
 
 
 
-  private getInterfaceTP(components?: ComponentsObject) {
-    if (!components) {return}
-    const schemas = components.schemas || {}
-    for (const schemaName in schemas) {
-      const name = this.resolveTypeName(schemaName)
-
-      const result = this.resolveObject(schemas[schemaName])
-
-      console.log(result)
-    }
-  }
-
-  // 获取 nunjucks模版
-  private getTemplate(type: TypescriptFileType): string {
-    return fs.readFileSync(path.join(this.templatesFolder, `${type}.njk`), 'utf8')
-  }
-
-  private async genFileFromTemplate(
-    fileName: string,
-    type: any,
-    params: Record<string, any>
-  ): Promise<boolean> {
-    try {
-      const template:string = this.getTemplate(type)
-      // 设置输出不转义
-      nunjucks.configure({
-        autoescape: false,
-      })
-      fs.writeFile(params.output, fileName, nunjucks.renderString(template))
-      return true
-      // await fs.writeFile(this.output, fileName, params)
-    } catch (error) {
-      console.error('[GenSDK] file gen fail:', fileName, 'type:', type)
-      throw error
+  // 生成 d.ts 文件
+  private getInterfaceTP(components: ComponentsObject) {
+    for (const typeName of Object.keys(components.schemas || {})) {
+      const name = this.resolveTypeName(typeName)
+      const result = this.resolveObject(components.schemas?.[typeName] || {})
+      console.log('aaaaaaaaaaaaaaaaaa', result)
+      return result
     }
   }
 
@@ -274,8 +243,10 @@ export default class ApiGenerator {
     components?: ComponentsObject, // openapi.component 数据
     output: string // 输出文件夹
   }) {
-    this.genFileFromTemplate('typing.d.ts', 'interface', {
-      output
+    this.genFileFromTemplate('typing.d.ts', 'interface', output, {
+      list: this.getInterfaceTP(components || {}),
+      disableTypeCheck: false,
+      namespace: 'ceshi111'
     })
   }
 
@@ -293,39 +264,6 @@ export default class ApiGenerator {
         components,
         output: outputFolder
       })
-
-      // Object.keys(paths || {}).forEach((p: string) => {
-      //   const pathItem: PathItemObject = paths![p]
-
-      //   this.methods.forEach(method => {
-      //     const operationObject: OperationObject = pathItem[method] as unknown as OperationObject
-      //     if (!operationObject) return
-
-      //     const tags = operationObject.tags || [operationObject.operationId]
-
-      //     tags.forEach(tagString => {
-      //       const tag = pinyin(tagString || '', { style: 'name' })
-      //       if (!this.apiData[tag]) this.apiData[tag] = []
-
-      //       this.apiData[tag].push({
-      //         path: outputFolder,
-      //         method,
-      //         ...operationObject
-      //       })
-      //     })
-      //   })
-      // })
-
-      // fs.writeFileSync(path.resolve(this.output, 'text.txt'))
-      // this.genFileFromTemplate('typings.d.ts', 'interface', {
-      //   namespace: '',
-      //   nullable: '',
-      //   // namespace: 'API',
-      //   list: ,
-      //   disableTypeCheck: false,
-      // })
-
-      // console.log(this.apiData)
 
     }
   }

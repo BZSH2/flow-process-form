@@ -1,0 +1,1719 @@
+{
+    code: 200,
+    data: [
+         {
+        "openapi": "3.0.1",
+        "info": {
+            "title": "petsAPI",
+            "description": "管理宠物、订单、购买、用户等宠物店业务操作。",
+            "version": "1.0.0"
+        },
+        "tags": [
+            {
+                "name": "pet"
+            }
+        ],
+        "paths": {
+            "/pets/{id}": {
+                "get": {
+                    "summary": "获取宠物",
+                    "deprecated": false,
+                    "description": "根据唯一 ID 返回一只宠物。",
+                    "operationId": "getPetById",
+                    "tags": [
+                        "pet"
+                    ],
+                    "parameters": [
+                        {
+                            "name": "id",
+                            "in": "path",
+                            "description": "宠物的唯一标识。",
+                            "required": true,
+                            "example": "1",
+                            "schema": {
+                                "type": "string"
+                            }
+                        }
+                    ],
+                    "responses": {
+                        "200": {
+                            "description": "操作成功",
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "$ref": "#/components/schemas/Pet"
+                                    },
+                                    "example": {
+                                        "id": 100,
+                                        "category": {
+                                            "id": 101,
+                                            "name": "dog"
+                                        },
+                                        "name": "Luna",
+                                        "photoUrls": [
+                                            "https://loremflickr.com/400/400?lock=2557291284045546",
+                                            "https://loremflickr.com/400/400?lock=1603075073377479"
+                                        ],
+                                        "tags": [
+                                            {
+                                                "id": 15,
+                                                "name": "Dalmatian"
+                                            }
+                                        ],
+                                        "status": "available"
+                                    }
+                                }
+                            },
+                            "headers": {}
+                        }
+                    },
+                    "security": [
+                        {
+                            "bearer_token": []
+                        }
+                    ]
+                },
+                "put": {
+                    "summary": "更新宠物",
+                    "deprecated": false,
+                    "description": "更新已有宠物的信息。",
+                    "operationId": "updatePet",
+                    "tags": [
+                        "pet"
+                    ],
+                    "parameters": [
+                        {
+                            "name": "id",
+                            "in": "path",
+                            "description": "宠物的唯一标识。",
+                            "required": true,
+                            "example": "1",
+                            "schema": {
+                                "type": "string"
+                            }
+                        }
+                    ],
+                    "requestBody": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Pet"
+                                },
+                                "examples": {}
+                            }
+                        }
+                    },
+                    "responses": {
+                        "200": {
+                            "description": "宠物更新成功。",
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "$ref": "#/components/schemas/Pet"
+                                    },
+                                    "example": {
+                                        "id": 57619952,
+                                        "category": {
+                                            "id": 97056790,
+                                            "name": "Mona Kshlerin"
+                                        },
+                                        "name": "doggie",
+                                        "photoUrls": [
+                                            "https://loremflickr.com/400/400?lock=190427740691304",
+                                            "https://loremflickr.com/400/400?lock=5512522463237719",
+                                            "https://loremflickr.com/400/400?lock=1184069713463914"
+                                        ],
+                                        "tags": [
+                                            {
+                                                "id": 1230446,
+                                                "name": "Timmy Schiller"
+                                            },
+                                            {
+                                                "id": 310656,
+                                                "name": "Ricardo Emard PhD"
+                                            }
+                                        ],
+                                        "status": "pending"
+                                    }
+                                }
+                            },
+                            "headers": {}
+                        }
+                    },
+                    "security": [
+                        {
+                            "petstore_auth": [
+                                "write:pets",
+                                "read:pets"
+                            ]
+                        }
+                    ]
+                },
+                "delete": {
+                    "summary": "删除宠物",
+                    "deprecated": false,
+                    "description": "通过唯一 ID 删除宠物。",
+                    "operationId": "deletePet",
+                    "tags": [
+                        "pet"
+                    ],
+                    "parameters": [
+                        {
+                            "name": "id",
+                            "in": "path",
+                            "description": "宠物的唯一标识。",
+                            "required": true,
+                            "example": "1",
+                            "schema": {
+                                "type": "string"
+                            }
+                        },
+                        {
+                            "name": "api_key",
+                            "in": "header",
+                            "description": "授权所需的 API 密钥（如有）。",
+                            "required": false,
+                            "example": "apikey-xxxxx",
+                            "schema": {
+                                "type": "string"
+                            }
+                        }
+                    ],
+                    "responses": {
+                        "200": {
+                            "description": "宠物删除成功。",
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "type": "object",
+                                        "properties": {}
+                                    }
+                                }
+                            },
+                            "headers": {}
+                        },
+                        "204": {
+                            "description": "无内容。宠物已被删除且没有返回其他内容。",
+                            "headers": {}
+                        }
+                    },
+                    "security": [
+                        {
+                            "petstore_auth": [
+                                "write:pets",
+                                "read:pets"
+                            ]
+                        }
+                    ]
+                }
+            },
+            "/pets": {
+                "post": {
+                    "summary": "创建宠物",
+                    "deprecated": false,
+                    "description": "向商店添加新宠物。",
+                    "operationId": "addPet",
+                    "tags": [
+                        "pet"
+                    ],
+                    "parameters": [],
+                    "requestBody": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Pet"
+                                },
+                                "examples": {}
+                            }
+                        }
+                    },
+                    "responses": {
+                        "200": {
+                            "description": "宠物创建成功。",
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "type": "object",
+                                        "properties": {
+                                            "id": {
+                                                "type": "integer",
+                                                "description": "宠物唯一标识。"
+                                            }
+                                        },
+                                        "required": [
+                                            "id"
+                                        ]
+                                    },
+                                    "example": {
+                                        "id": 100
+                                    }
+                                }
+                            },
+                            "headers": {}
+                        }
+                    },
+                    "security": [
+                        {
+                            "petstore_auth": [
+                                "write:pets",
+                                "read:pets"
+                            ]
+                        }
+                    ]
+                },
+                "get": {
+                    "summary": "列出宠物",
+                    "deprecated": false,
+                    "description": "可用逗号分隔字符串提供多个状态值。",
+                    "operationId": "findPetsByStatus",
+                    "tags": [
+                        "pet"
+                    ],
+                    "parameters": [
+                        {
+                            "name": "status",
+                            "in": "query",
+                            "description": "用于筛选宠物状态的值（接受逗号分隔值）。",
+                            "required": false,
+                            "example": [
+                                "available,pending"
+                            ],
+                            "schema": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string",
+                                    "enum": [
+                                        "available",
+                                        "pending",
+                                        "sold"
+                                    ],
+                                    "default": "available"
+                                }
+                            }
+                        },
+                        {
+                            "name": "tags",
+                            "in": "query",
+                            "description": "按标签筛选结果（接受逗号分隔或重复参数）。",
+                            "required": false,
+                            "example": [
+                                "dog,fish"
+                            ],
+                            "schema": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    ],
+                    "responses": {
+                        "200": {
+                            "description": "操作成功",
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "type": "array",
+                                        "items": {
+                                            "$ref": "#/components/schemas/Pet"
+                                        }
+                                    },
+                                    "example": [
+                                        {
+                                            "id": 15,
+                                            "category": {
+                                                "id": 21,
+                                                "name": "Marcella Weissnat"
+                                            },
+                                            "name": "doggie",
+                                            "photoUrls": [
+                                                "https://loremflickr.com/400/400?lock=3918785348234384",
+                                                "https://loremflickr.com/400/400?lock=6202587563304484"
+                                            ],
+                                            "tags": [
+                                                {
+                                                    "id": 47,
+                                                    "name": "Celia Breitenberg"
+                                                }
+                                            ],
+                                            "status": "available"
+                                        },
+                                        {
+                                            "id": 71,
+                                            "category": {
+                                                "id": 46,
+                                                "name": "Amber Boyer"
+                                            },
+                                            "name": "doggie",
+                                            "photoUrls": [
+                                                "https://loremflickr.com/400/400?lock=2842023516272171"
+                                            ],
+                                            "tags": [
+                                                {
+                                                    "id": 11,
+                                                    "name": "Dr. Victoria Zieme"
+                                                }
+                                            ],
+                                            "status": "pending"
+                                        },
+                                        {
+                                            "id": 40,
+                                            "category": {
+                                                "id": 61,
+                                                "name": "Sheryl Boyer"
+                                            },
+                                            "name": "doggie",
+                                            "photoUrls": [
+                                                "https://loremflickr.com/400/400?lock=5750598354305884",
+                                                "https://loremflickr.com/400/400?lock=2063547589454977"
+                                            ],
+                                            "tags": [
+                                                {
+                                                    "id": 78,
+                                                    "name": "Gene Deckow-Lynch"
+                                                }
+                                            ],
+                                            "status": "available"
+                                        }
+                                    ]
+                                }
+                            },
+                            "headers": {}
+                        }
+                    },
+                    "security": [
+                        {
+                            "petstore_auth": [
+                                "write:pets",
+                                "read:pets"
+                            ]
+                        }
+                    ]
+                }
+            },
+            "/pets/{petId}/images": {
+                "post": {
+                    "summary": "上传宠物图片",
+                    "deprecated": false,
+                    "description": "为指定的宠物上传图片。",
+                    "operationId": "uploadFile",
+                    "tags": [
+                        "pet"
+                    ],
+                    "parameters": [
+                        {
+                            "name": "id",
+                            "in": "path",
+                            "description": "宠物的唯一标识。",
+                            "required": true,
+                            "example": "1",
+                            "schema": {
+                                "type": "string"
+                            }
+                        },
+                        {
+                            "name": "petId",
+                            "in": "path",
+                            "description": "",
+                            "required": true,
+                            "example": "",
+                            "schema": {
+                                "type": "string"
+                            }
+                        }
+                    ],
+                    "requestBody": {
+                        "content": {
+                            "multipart/form-data": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "additionalMetadata": {
+                                            "description": "Additional data to pass to server",
+                                            "type": "string",
+                                            "example": ""
+                                        },
+                                        "file": {
+                                            "description": "File to upload",
+                                            "type": "string",
+                                            "format": "binary",
+                                            "example": ""
+                                        }
+                                    }
+                                },
+                                "examples": {}
+                            }
+                        }
+                    },
+                    "responses": {
+                        "200": {
+                            "description": "操作成功",
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "$ref": "#/components/schemas/ApiResponse"
+                                    },
+                                    "example": {
+                                        "code": 3,
+                                        "type": "ex dolor",
+                                        "message": "Pecus carcer cometes credo."
+                                    }
+                                }
+                            },
+                            "headers": {}
+                        }
+                    },
+                    "security": [
+                        {
+                            "petstore_auth": [
+                                "write:pets",
+                                "read:pets"
+                            ]
+                        }
+                    ]
+                }
+            }
+        },
+        "components": {
+            "schemas": {
+                "Pet": {
+                    "type": "object",
+                    "description": "宠物商店中的动物信息。",
+                    "properties": {
+                        "id": {
+                            "type": "integer",
+                            "format": "int64",
+                            "description": "唯一宠物标识。"
+                        },
+                        "category": {
+                            "$ref": "#/components/schemas/Category"
+                        },
+                        "name": {
+                            "type": "string",
+                            "description": "宠物名称",
+                            "example": "doggie"
+                        },
+                        "photoUrls": {
+                            "type": "array",
+                            "description": "宠物图片 URL 列表。",
+                            "xml": {
+                                "wrapped": true
+                            },
+                            "items": {
+                                "type": "string",
+                                "xml": {
+                                    "name": "photoUrl"
+                                }
+                            }
+                        },
+                        "tags": {
+                            "type": "array",
+                            "description": "宠物关联标签。",
+                            "xml": {
+                                "wrapped": true
+                            },
+                            "items": {
+                                "$ref": "#/components/schemas/Tag"
+                            }
+                        },
+                        "status": {
+                            "type": "string",
+                            "description": "宠物在商店中的状态",
+                            "enum": [
+                                "available",
+                                "pending",
+                                "sold"
+                            ]
+                        }
+                    },
+                    "xml": {
+                        "name": "Pet"
+                    }
+                },
+                "Category": {
+                    "type": "object",
+                    "description": "宠物所属分类。",
+                    "properties": {
+                        "id": {
+                            "type": "integer",
+                            "format": "int64",
+                            "description": "类别唯一 ID。"
+                        },
+                        "name": {
+                            "type": "string",
+                            "description": "类别名称。"
+                        }
+                    },
+                    "xml": {
+                        "name": "Category"
+                    }
+                },
+                "ApiResponse": {
+                    "type": "object",
+                    "description": "通用 API 响应模型。",
+                    "properties": {
+                        "code": {
+                            "type": "integer",
+                            "format": "int32",
+                            "description": "响应时返回的应用码。"
+                        },
+                        "type": {
+                            "type": "string",
+                            "description": "响应类型/分类。"
+                        },
+                        "message": {
+                            "type": "string",
+                            "description": "响应的人类可读信息。"
+                        }
+                    }
+                },
+                "Tag": {
+                    "type": "object",
+                    "description": "与宠物关联的标签。",
+                    "properties": {
+                        "id": {
+                            "type": "integer",
+                            "format": "int64",
+                            "description": "标签唯一 ID。"
+                        },
+                        "name": {
+                            "type": "string",
+                            "description": "标签值。"
+                        }
+                    },
+                    "xml": {
+                        "name": "Tag"
+                    }
+                }
+            },
+            "responses": {
+                "BadRequest": {
+                    "description": "",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "type": {
+                                        "type": "string",
+                                        "example": "https://example.com/errors/bad-request"
+                                    },
+                                    "title": {
+                                        "type": "string",
+                                        "example": "Bad Request"
+                                    },
+                                    "status": {
+                                        "type": "integer",
+                                        "example": 400
+                                    },
+                                    "detail": {
+                                        "type": "string",
+                                        "example": "The request is invalid or missing required parameters."
+                                    }
+                                }
+                            },
+                            "examples": {
+                                "Example": {
+                                    "summary": "Example",
+                                    "value": {
+                                        "type": "https://example.com/errors/bad-request",
+                                        "title": "Bad Request",
+                                        "status": 400,
+                                        "detail": "The request is invalid or missing required parameters."
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "Unauthorized": {
+                    "description": "",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "type": {
+                                        "type": "string",
+                                        "example": "https://example.com/errors/unauthorized"
+                                    },
+                                    "title": {
+                                        "type": "string",
+                                        "example": "Unauthorized"
+                                    },
+                                    "status": {
+                                        "type": "integer",
+                                        "example": 401
+                                    },
+                                    "detail": {
+                                        "type": "string",
+                                        "example": "You do not have the necessary permissions."
+                                    }
+                                }
+                            },
+                            "examples": {
+                                "Example": {
+                                    "summary": "Example",
+                                    "value": {
+                                        "type": "https://example.com/errors/unauthorized",
+                                        "title": "Unauthorized",
+                                        "status": 401,
+                                        "detail": "You do not have the necessary permissions."
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "Forbidden": {
+                    "description": "",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "type": {
+                                        "type": "string",
+                                        "example": "https://example.com/errors/forbidden"
+                                    },
+                                    "title": {
+                                        "type": "string",
+                                        "example": "Forbidden"
+                                    },
+                                    "status": {
+                                        "type": "integer",
+                                        "example": 403
+                                    },
+                                    "detail": {
+                                        "type": "string",
+                                        "example": "Access is forbidden with the provided credentials."
+                                    }
+                                }
+                            },
+                            "examples": {
+                                "Example": {
+                                    "summary": "Example",
+                                    "value": {
+                                        "type": "https://example.com/errors/forbidden",
+                                        "title": "Forbidden",
+                                        "status": 403,
+                                        "detail": "Access is forbidden with the provided credentials."
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "NotFound": {
+                    "description": "",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "type": {
+                                        "type": "string",
+                                        "example": "https://example.com/errors/not-found"
+                                    },
+                                    "title": {
+                                        "type": "string",
+                                        "example": "Not Found"
+                                    },
+                                    "status": {
+                                        "type": "integer",
+                                        "example": 404
+                                    },
+                                    "detail": {
+                                        "type": "string",
+                                        "example": "The specified resource does not exist."
+                                    }
+                                }
+                            },
+                            "examples": {
+                                "Example": {
+                                    "summary": "Example",
+                                    "value": {
+                                        "type": "https://example.com/errors/not-found",
+                                        "title": "Not Found",
+                                        "status": 404,
+                                        "detail": "The specified resource does not exist."
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "TooManyRequests": {
+                    "description": "",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "type": {
+                                        "type": "string",
+                                        "example": "https://example.com/errors/too-many-requests"
+                                    },
+                                    "title": {
+                                        "type": "string",
+                                        "example": "Too Many Requests"
+                                    },
+                                    "status": {
+                                        "type": "integer",
+                                        "example": 429
+                                    },
+                                    "detail": {
+                                        "type": "string",
+                                        "example": "You have exceeded the rate limit."
+                                    }
+                                }
+                            },
+                            "examples": {
+                                "Example": {
+                                    "summary": "Example",
+                                    "value": {
+                                        "type": "https://example.com/errors/too-many-requests",
+                                        "title": "Too Many Requests",
+                                        "status": 429,
+                                        "detail": "You have exceeded the rate limit."
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "InternalServerError": {
+                    "description": "",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "type": {
+                                        "type": "string",
+                                        "example": "https://example.com/errors/internal-server-error"
+                                    },
+                                    "title": {
+                                        "type": "string",
+                                        "example": "Internal Server Error"
+                                    },
+                                    "status": {
+                                        "type": "integer",
+                                        "example": 500
+                                    },
+                                    "detail": {
+                                        "type": "string",
+                                        "example": "An unexpected error occurred."
+                                    }
+                                }
+                            },
+                            "examples": {
+                                "Example": {
+                                    "summary": "Example",
+                                    "value": {
+                                        "type": "https://example.com/errors/internal-server-error",
+                                        "title": "Internal Server Error",
+                                        "status": 500,
+                                        "detail": "An unexpected error occurred."
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "securitySchemes": {
+                "bearer_token": {
+                    "scheme": "bearer",
+                    "type": "http"
+                },
+                "petstore_auth": {
+                    "type": "oauth2",
+                    "flows": {
+                        "implicit": {
+                            "authorizationUrl": "https://petstore.swagger.io/oauth/authorize",
+                            "scopes": {
+                                "read:pets": "read your pets",
+                                "write:pets": "modify pets in your account"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "servers": [],
+        "security": []
+    },
+    {
+  "openapi": "3.1.0",
+  "info": {
+    "title": "storeAPI",
+    "description": "管理宠物、订单、购买、用户等宠物店业务操作。",
+    "version": "1.0.0"
+  },
+  "tags": [
+    {
+      "name": "Payments"
+    },
+    {
+      "name": "store"
+    }
+  ],
+  "paths": {
+    "/orders/{orderId}/payment": {
+      "post": {
+        "summary": "支付订单",
+        "deprecated": false,
+        "description": "支付是对订单发起支付的尝试，确认支付后用户可以获取其票据。",
+        "operationId": "create-order-payment",
+        "tags": [
+          "Payments"
+        ],
+        "parameters": [
+          {
+            "name": "orderId",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "example": "123456",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OrderPayment"
+              },
+              "examples": {
+                "Card": {
+                  "value": {
+                    "amount": 49.99,
+                    "currency": "gbp",
+                    "source": {
+                      "object": "card",
+                      "name": "J. Doe",
+                      "number": "4242424242424242",
+                      "cvc": "123",
+                      "exp_month": 12,
+                      "exp_year": 2025,
+                      "address_line1": "123 Fake Street",
+                      "address_line2": "4th Floor",
+                      "address_city": "London",
+                      "address_country": "gb",
+                      "address_post_code": "N12 9XX"
+                    }
+                  },
+                  "summary": "银行卡支付"
+                },
+                "Bank": {
+                  "value": {
+                    "amount": 100.5,
+                    "currency": "gbp",
+                    "source": {
+                      "object": "bank_account",
+                      "name": "J. Doe",
+                      "number": "00012345",
+                      "sort_code": "000123",
+                      "account_type": "individual",
+                      "bank_name": "Starling Bank",
+                      "country": "gb"
+                    }
+                  },
+                  "summary": "银行账户支付"
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "支付成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/OrderPayment"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "links": {
+                          "$ref": "#/components/schemas/Links-Order"
+                        }
+                      }
+                    }
+                  ]
+                },
+                "examples": {
+                  "1": {
+                    "summary": "Card Payment",
+                    "value": {
+                      "id": "2e3b4f5a-6b7c-8d9e-0f1a-2b3c4d5e6f7a",
+                      "amount": 49.99,
+                      "currency": "gbp",
+                      "source": {
+                        "object": "card",
+                        "name": "J. Doe",
+                        "number": "************4242",
+                        "cvc": "123",
+                        "exp_month": 12,
+                        "exp_year": 2025,
+                        "address_country": "gb",
+                        "address_post_code": "N12 9XX"
+                      },
+                      "status": "succeeded",
+                      "links": {
+                        "order": "https://api.example.com/orders/1725ff48-ab45-4bb5-9d02-88745177dedb/payment"
+                      }
+                    }
+                  },
+                  "2": {
+                    "summary": "Bank Account Payment",
+                    "value": {
+                      "id": "2e3b4f5a-6b7c-8d9e-0f1a-2b3c4d5e6f7a",
+                      "amount": 100.5,
+                      "currency": "gbp",
+                      "source": {
+                        "object": "bank_account",
+                        "name": "J. Doe",
+                        "account_type": "individual",
+                        "number": "*********2345",
+                        "sort_code": "000123",
+                        "bank_name": "Starling Bank",
+                        "country": "gb"
+                      },
+                      "status": "succeeded",
+                      "links": {
+                        "order": "https://api.example.com/orders/1725ff48-ab45-4bb5-9d02-88745177dedb"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "headers": {}
+          }
+        },
+        "security": []
+      }
+    },
+    "/inventories": {
+      "get": {
+        "summary": "列出现有库存",
+        "deprecated": false,
+        "description": "返回状态码到数量的映射。",
+        "operationId": "getInventory",
+        "tags": [
+          "store"
+        ],
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "description": "用于筛选库存状态的值（逗号分隔）。",
+            "required": false,
+            "example": [
+              "available, pending"
+            ],
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "操作成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "integer",
+                    "format": "int32"
+                  },
+                  "properties": {}
+                }
+              }
+            },
+            "headers": {}
+          }
+        },
+        "security": [
+          {
+            "bearer_token": []
+          }
+        ]
+      }
+    },
+    "/orders": {
+      "post": {
+        "summary": "创建订单",
+        "deprecated": false,
+        "description": "在商店中创建新订单。",
+        "operationId": "placeOrder",
+        "tags": [
+          "store"
+        ],
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Order"
+              },
+              "examples": {}
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "操作成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Order"
+                },
+                "example": {
+                  "id": 44524671,
+                  "petId": 90180021,
+                  "quantity": 23,
+                  "shipDate": "2025-08-15",
+                  "status": "placed",
+                  "complete": false
+                }
+              }
+            },
+            "headers": {}
+          }
+        },
+        "security": []
+      }
+    },
+    "/orders/{id}": {
+      "get": {
+        "summary": "获取订单",
+        "deprecated": false,
+        "description": "返回有效响应时，尝试使用值在 1～10 范围内的整数 ID。其他值将产生异常。",
+        "operationId": "getOrderById",
+        "tags": [
+          "store"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "订单的唯一标识。",
+            "required": true,
+            "example": "123",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "操作成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Order"
+                },
+                "example": {
+                  "id": 40238436,
+                  "petId": 69923630,
+                  "quantity": 87,
+                  "shipDate": "2024-12-09",
+                  "status": "approved",
+                  "complete": false
+                }
+              }
+            },
+            "headers": {}
+          }
+        },
+        "security": []
+      },
+      "delete": {
+        "summary": "删除订单",
+        "deprecated": false,
+        "description": "返回有效响应时，尝试使用正整数的订单 ID。负数或非整数将导致 API 错误。",
+        "operationId": "deleteOrder",
+        "tags": [
+          "store"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "订单的唯一标识。",
+            "required": true,
+            "example": "",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "订单删除成功。",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {}
+                }
+              }
+            },
+            "headers": {}
+          }
+        },
+        "security": []
+      }
+    }
+  },
+  "webhooks": {},
+  "components": {
+    "schemas": {
+      "OrderPayment": {
+        "description": "订单支付信息。",
+        "type": "object",
+        "properties": {
+          "id": {
+            "description": "支付唯一标识。用于其他对象关联本支付。",
+            "type": "string",
+            "format": "uuid",
+            "readOnly": true
+          },
+          "amount": {
+            "description": "支付金额。待收款的正十进制数。",
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "minimum": 0,
+            "examples": [
+              49.99
+            ]
+          },
+          "currency": {
+            "description": "三位 [ISO 货币代码](https://www.iso.org/iso-4217-currency-codes.html)，小写。",
+            "type": "string",
+            "enum": [
+              "bam",
+              "bgn",
+              "chf",
+              "eur",
+              "gbp",
+              "nok",
+              "sek",
+              "try"
+            ]
+          },
+          "source": {
+            "description": "支付来源。可以是银行卡或银行账户。部分属性为保护隐私读取时隐藏。",
+            "oneOf": [
+              {
+                "title": "银行卡",
+                "description": "用于支付的借记卡或信用卡。",
+                "type": "object",
+                "properties": {
+                  "object": {
+                    "type": "string",
+                    "const": "card",
+                    "description": "表示该对象为 'card'。"
+                  },
+                  "name": {
+                    "type": "string",
+                    "description": "卡持人姓名（与卡面一致）。",
+                    "examples": [
+                      "Francis Bourgeois"
+                    ]
+                  },
+                  "number": {
+                    "type": "string",
+                    "description": "卡号字符串，不含分隔符（读取时为脱敏格式）。",
+                    "examples": [
+                      "4242424242424242"
+                    ]
+                  },
+                  "cvc": {
+                    "type": "string",
+                    "description": "卡片安全码，通常为卡背后三/四位。",
+                    "minLength": 3,
+                    "maxLength": 4,
+                    "writeOnly": true,
+                    "examples": [
+                      "123"
+                    ]
+                  },
+                  "exp_month": {
+                    "type": "integer",
+                    "format": "int64",
+                    "description": "卡到期月份，两位数字。",
+                    "examples": [
+                      12
+                    ]
+                  },
+                  "exp_year": {
+                    "type": "integer",
+                    "format": "int64",
+                    "description": "卡到期年份，四位数字。",
+                    "examples": [
+                      2025
+                    ]
+                  },
+                  "address_line1": {
+                    "type": "string",
+                    "description": "账单地址的第一行。",
+                    "writeOnly": true
+                  },
+                  "address_line2": {
+                    "type": "string",
+                    "description": "账单地址的第二行。",
+                    "writeOnly": true
+                  },
+                  "address_city": {
+                    "type": "string",
+                    "description": "账单地址所在城市。"
+                  },
+                  "address_country": {
+                    "type": "string",
+                    "description": "账单地址所在国家（两字母国家码）。"
+                  },
+                  "address_post_code": {
+                    "type": "string",
+                    "description": "账单地址邮编。"
+                  }
+                },
+                "required": [
+                  "name",
+                  "number",
+                  "cvc",
+                  "exp_month",
+                  "exp_year",
+                  "address_country"
+                ]
+              },
+              {
+                "title": "银行账户",
+                "description": "用于支付的银行账户。必须支持收款货币。",
+                "type": "object",
+                "properties": {
+                  "object": {
+                    "const": "bank_account",
+                    "type": "string",
+                    "description": "表示该对象为 'bank_account'。"
+                  },
+                  "name": {
+                    "type": "string",
+                    "description": "账户持有人姓名。"
+                  },
+                  "number": {
+                    "type": "string",
+                    "description": "银行账户号码（字符串）。"
+                  },
+                  "sort_code": {
+                    "type": "string",
+                    "description": "银行账户的 Sort Code（6 位字符串）。"
+                  },
+                  "account_type": {
+                    "enum": [
+                      "individual",
+                      "company"
+                    ],
+                    "type": "string",
+                    "description": "账户持有实体类型。"
+                  },
+                  "bank_name": {
+                    "type": "string",
+                    "description": "与路由号关联的银行名称。",
+                    "examples": [
+                      "Starling Bank"
+                    ]
+                  },
+                  "country": {
+                    "type": "string",
+                    "description": "两位国家代码（ISO 3166-1 alpha-2）。"
+                  }
+                },
+                "required": [
+                  "name",
+                  "number",
+                  "account_type",
+                  "bank_name",
+                  "country"
+                ]
+              }
+            ]
+          },
+          "status": {
+            "description": "支付状态：pending、succeeded 或 failed 之一。",
+            "type": "string",
+            "enum": [
+              "pending",
+              "succeeded",
+              "failed"
+            ],
+            "readOnly": true
+          }
+        }
+      },
+      "Links-Order": {
+        "description": "订单资源链接。",
+        "type": "object",
+        "properties": {
+          "order": {
+            "type": "string",
+            "format": "uri",
+            "description": "该订单相关的 URL。",
+            "examples": [
+              "https://api.example.com/orders/1725ff48-ab45-4bb5-9d02-88745177dedb"
+            ]
+          }
+        }
+      },
+      "Order": {
+        "type": "object",
+        "description": "宠物订单详情信息。",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64",
+            "description": "订单唯一标识。"
+          },
+          "petId": {
+            "type": "integer",
+            "format": "int64",
+            "description": "所订购的宠物编号。"
+          },
+          "quantity": {
+            "type": "integer",
+            "format": "int32",
+            "description": "订单数量。"
+          },
+          "shipDate": {
+            "type": "string",
+            "format": "date-time",
+            "description": "订单预计发货日期。"
+          },
+          "status": {
+            "type": "string",
+            "description": "订单状态",
+            "enum": [
+              "placed",
+              "approved",
+              "delivered"
+            ]
+          },
+          "complete": {
+            "type": "boolean",
+            "description": "订单是否已完成。"
+          }
+        },
+        "xml": {
+          "name": "Order"
+        }
+      }
+    },
+    "responses": {
+      "BadRequest": {
+        "description": "",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "examples": [
+                    "https://example.com/errors/bad-request"
+                  ]
+                },
+                "title": {
+                  "type": "string",
+                  "examples": [
+                    "Bad Request"
+                  ]
+                },
+                "status": {
+                  "type": "integer",
+                  "examples": [
+                    400
+                  ]
+                },
+                "detail": {
+                  "type": "string",
+                  "examples": [
+                    "The request is invalid or missing required parameters."
+                  ]
+                }
+              }
+            },
+            "examples": {
+              "Example": {
+                "summary": "Example",
+                "value": {
+                  "type": "https://example.com/errors/bad-request",
+                  "title": "Bad Request",
+                  "status": 400,
+                  "detail": "The request is invalid or missing required parameters."
+                }
+              }
+            }
+          }
+        }
+      },
+      "Unauthorized": {
+        "description": "",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "examples": [
+                    "https://example.com/errors/unauthorized"
+                  ]
+                },
+                "title": {
+                  "type": "string",
+                  "examples": [
+                    "Unauthorized"
+                  ]
+                },
+                "status": {
+                  "type": "integer",
+                  "examples": [
+                    401
+                  ]
+                },
+                "detail": {
+                  "type": "string",
+                  "examples": [
+                    "You do not have the necessary permissions."
+                  ]
+                }
+              }
+            },
+            "examples": {
+              "Example": {
+                "summary": "Example",
+                "value": {
+                  "type": "https://example.com/errors/unauthorized",
+                  "title": "Unauthorized",
+                  "status": 401,
+                  "detail": "You do not have the necessary permissions."
+                }
+              }
+            }
+          }
+        }
+      },
+      "Forbidden": {
+        "description": "",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "examples": [
+                    "https://example.com/errors/forbidden"
+                  ]
+                },
+                "title": {
+                  "type": "string",
+                  "examples": [
+                    "Forbidden"
+                  ]
+                },
+                "status": {
+                  "type": "integer",
+                  "examples": [
+                    403
+                  ]
+                },
+                "detail": {
+                  "type": "string",
+                  "examples": [
+                    "Access is forbidden with the provided credentials."
+                  ]
+                }
+              }
+            },
+            "examples": {
+              "Example": {
+                "summary": "Example",
+                "value": {
+                  "type": "https://example.com/errors/forbidden",
+                  "title": "Forbidden",
+                  "status": 403,
+                  "detail": "Access is forbidden with the provided credentials."
+                }
+              }
+            }
+          }
+        }
+      },
+      "NotFound": {
+        "description": "",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "examples": [
+                    "https://example.com/errors/not-found"
+                  ]
+                },
+                "title": {
+                  "type": "string",
+                  "examples": [
+                    "Not Found"
+                  ]
+                },
+                "status": {
+                  "type": "integer",
+                  "examples": [
+                    404
+                  ]
+                },
+                "detail": {
+                  "type": "string",
+                  "examples": [
+                    "The specified resource does not exist."
+                  ]
+                }
+              }
+            },
+            "examples": {
+              "Example": {
+                "summary": "Example",
+                "value": {
+                  "type": "https://example.com/errors/not-found",
+                  "title": "Not Found",
+                  "status": 404,
+                  "detail": "The specified resource does not exist."
+                }
+              }
+            }
+          }
+        }
+      },
+      "TooManyRequests": {
+        "description": "",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "examples": [
+                    "https://example.com/errors/too-many-requests"
+                  ]
+                },
+                "title": {
+                  "type": "string",
+                  "examples": [
+                    "Too Many Requests"
+                  ]
+                },
+                "status": {
+                  "type": "integer",
+                  "examples": [
+                    429
+                  ]
+                },
+                "detail": {
+                  "type": "string",
+                  "examples": [
+                    "You have exceeded the rate limit."
+                  ]
+                }
+              }
+            },
+            "examples": {
+              "Example": {
+                "summary": "Example",
+                "value": {
+                  "type": "https://example.com/errors/too-many-requests",
+                  "title": "Too Many Requests",
+                  "status": 429,
+                  "detail": "You have exceeded the rate limit."
+                }
+              }
+            }
+          }
+        }
+      },
+      "InternalServerError": {
+        "description": "",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "examples": [
+                    "https://example.com/errors/internal-server-error"
+                  ]
+                },
+                "title": {
+                  "type": "string",
+                  "examples": [
+                    "Internal Server Error"
+                  ]
+                },
+                "status": {
+                  "type": "integer",
+                  "examples": [
+                    500
+                  ]
+                },
+                "detail": {
+                  "type": "string",
+                  "examples": [
+                    "An unexpected error occurred."
+                  ]
+                }
+              }
+            },
+            "examples": {
+              "Example": {
+                "summary": "Example",
+                "value": {
+                  "type": "https://example.com/errors/internal-server-error",
+                  "title": "Internal Server Error",
+                  "status": 500,
+                  "detail": "An unexpected error occurred."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "bearer_token": {
+        "scheme": "bearer",
+        "type": "http"
+      }
+    }
+  },
+  "servers": [],
+  "security": []
+}
+    ]
+}

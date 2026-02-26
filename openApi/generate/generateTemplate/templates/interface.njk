@@ -9,8 +9,8 @@ declare namespace {{ namespace }} {
       {%- for prop in type.props %}
           {
           {%- for p in prop %}
-            {%- if p.desc %}
-              /** {{ p.desc }} */
+            {%- if p.description %}
+              /** {{ p.description }} */
             {%- endif %}
             {%- if nullable %}
               '{{ p.name }}'?: {{ p.type | safe }}{{'' if p.required else '| null'}};
@@ -23,13 +23,13 @@ declare namespace {{ namespace }} {
       {%- endfor %}
     {%- else %}
       {%- if type.isEnum  %}
-        {%- if type.desc %}
-          /** {{ type.desc }} */
+        {%- if type.description %}
+          /** {{ type.description }} */
         {%- endif %}
         enum {{ type.typeName | safe }} {{ type.type }};
       {%- else %}
-        {%- if type.desc %}
-          /** {{ type.desc }} */
+        {%- if type.description %}
+          /** {{ type.description }} */
         {%- endif %}
         type {{ type.typeName | safe }} = {{ type.type }};
       {%- endif %}

@@ -16,7 +16,7 @@ echo "$STAGED_FILES" | sed 's/^/  /'
 
 # 1. 运行 lint-staged
 echo "🔍 运行代码检查和格式化..."
-# npm run lint:all
+npm run lint:all
 
 if [ $? -ne 0 ]; then
   echo "❌ 代码检查失败，请修复以上问题"
