@@ -2,6 +2,7 @@ import path from 'path'
 import url from 'url'
 import { generatorFolder, resolveTypeName } from './utils'
 import GenerateTsType from './generateTsType'
+import GenerateRequest from './generateRequest'
 import {
   type OpenAPIObject
 } from 'openapi3-ts/oas31'
@@ -44,6 +45,8 @@ export default class ApiGenerator {
       // 生成ts类型
       GenerateTsType(outputFolder, components, name)
 
+      // 生成接口相关
+      GenerateRequest(outputFolder, spec)
     }
   }
 }

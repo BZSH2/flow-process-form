@@ -33,6 +33,7 @@ class OpenApi {
 
     // 3. 生成api相关
     new ApiGenerator(this.config, data).generator()
+
   }
 }
 
