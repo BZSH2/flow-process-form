@@ -142,6 +142,8 @@ function getType(
 
   let { type } = schema as any
 
+  console.log('111111111111111111111111', type)
+
   const numberEnum = [
     'int64',
     'integer',

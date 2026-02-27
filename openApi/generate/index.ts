@@ -10,7 +10,7 @@ import {
 export const __filename = url.fileURLToPath(import.meta.url);
 export const __dirname = path.dirname(__filename);
 
-interface OpenApiConfig {
+export interface OpenApiConfig {
   /** 输出文件位置 */
   output: string
   /** 是否生成d.ts文件 */

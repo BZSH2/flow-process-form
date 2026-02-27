@@ -3,9 +3,8 @@ import { fileURLToPath } from 'url';
 import modules from './modules';
 import axios from 'axios';
 import { type OpenAPIObject } from 'openapi3-ts/oas31'
-import ApiGenerator from './generate'
-import { generatorFolder } from './utils/utils'
-import { OpenApiConfig } from './utils'
+import ApiGenerator, { type OpenApiConfig } from './generate'
+import { generatorFolder } from './generate/utils'
 
 class OpenApi {
   private config: OpenApiConfig;
