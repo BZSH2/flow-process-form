@@ -132,7 +132,6 @@
       "ignoreUrls": true,
       "ignoreTemplateLiterals": true
     }],
-    "max-lines": ["warn", 500],
     "max-lines-per-function": ["warn", {
       "max": 60,
       "skipComments": true,
