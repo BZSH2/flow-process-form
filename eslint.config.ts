@@ -125,6 +125,7 @@ export default defineConfig([
         skipComments: true, // 跳过注释行
         skipBlankLines: true // 跳过空行
       }],
+      'max-lines': ['warn', { max: 800 }],
       'vue/sort-keys': ['off'],
       'vue/v-on-event-hyphenation': [
         'error',
