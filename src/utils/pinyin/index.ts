@@ -68,7 +68,7 @@ export default function pinyin(
 
   try {
     return pinyinUtil(text, (finalConfig as any)).trim()
-  } catch (error) {
+  } catch {
     console.warn('[pinyin] 转换失败，返回原文:', text)
     return text
   }

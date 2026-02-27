@@ -1,38 +1,68 @@
 declare namespace {{ namespace }} {
   {% for type in list -%}
-    {%- if type.props.length %}
-      {%- if type.isEnum %}       
-        enum {{ type.typeName | safe }} 
-      {%- else %}       
-        type {{ type.typeName | safe }} =
+    {# ==================== 接口类型 ==================== #}
+    {%- if type.type === 'interface' %}
+      {%- if type.description %}
+        /** {{ type.description }} */
       {%- endif %}
-      {%- for prop in type.props %}
-          {
-          {%- for p in prop %}
-            {%- if p.description %}
-              /** {{ p.description }} */
-            {%- endif %}
-            {%- if nullable %}
-              '{{ p.name }}'?: {{ p.type | safe }}{{'' if p.required else '| null'}};
-            {%- else %}
-              '{{ p.name }}'{{ '' if p.required else '?' }}: {{ p.type | safe }};
-            {%- endif %}
-          {%- endfor %}
-          }
-        {{ '' if loop.last === true else ' & '  }}
-      {%- endfor %}
+      interface {{ type.typeName }} {
+        {%- for prop in type.properties %}
+          {%- if prop.description %}
+            /** {{ prop.description }} */
+          {%- endif %}
+          {%- if prop.isIndexSignature %}
+            [key: {{ prop.keyType }}]: {{ prop.type }};
+          {%- else %}
+            {{ prop.name }}{% if not prop.required %}?{% endif %}: {{ prop.type }};
+          {%- endif %}
+        {%- endfor %}
+      }
+    
+    {# ==================== 枚举类型 ==================== #}
+    {%- elseif type.type === 'enum' %}
+      {%- if type.description %}
+        /** {{ type.description }} */
+      {%- endif %}
+      enum {{ type.typeName }} {
+        {%- for value in type.enumValues %}
+          {{ value }} = {% if type.valueType === 'string' %}"{{ value }}"{% else %}{{ value }}{% endif %},
+        {%- endfor %}
+      }
+    
+    {# ==================== 类型别名 ==================== #}
+    {%- elseif type.type === 'typeAlias' %}
+      {%- if type.description %}
+        /** {{ type.description }} */
+      {%- endif %}
+      {%- if type.isExport %}export {% endif %}type {{ type.typeName }} = {{ type.typeDefinition }};
+    
+    {# ==================== 联合类型 ==================== #}
+    {%- elseif type.type === 'union' %}
+      {%- if type.description %}
+        /** {{ type.description }} */
+      {%- endif %}
+      type {{ type.typeName }} = {{ type.unionTypes | join(' | ') }};
+    
+    {# ==================== 交叉类型 ==================== #}
+    {%- elseif type.type === 'intersection' %}
+      {%- if type.description %}
+        /** {{ type.description }} */
+      {%- endif %}
+      type {{ type.typeName }} = {{ type.intersectionTypes | join(' & ') }};
+    
+    {# ==================== 数组类型 ==================== #}
+    {%- elseif type.type === 'array' %}
+      {%- if type.description %}
+        /** {{ type.description }} */
+      {%- endif %}
+      {%- if type.isExport %}export {% endif %}type {{ type.typeName }} = {{ type.itemType }}[];
+    
+    {# ==================== 基础类型 ==================== #}
     {%- else %}
-      {%- if type.isEnum  %}
-        {%- if type.description %}
-          /** {{ type.description }} */
-        {%- endif %}
-        enum {{ type.typeName | safe }} {{ type.type }};
-      {%- else %}
-        {%- if type.description %}
-          /** {{ type.description }} */
-        {%- endif %}
-        type {{ type.typeName | safe }} = {{ type.type }};
+      {%- if type.description %}
+        /** {{ type.description }} */
       {%- endif %}
+      type {{ type.typeName }} = {{ type.dataType }};
     {%- endif %}
   {% endfor %}
 }

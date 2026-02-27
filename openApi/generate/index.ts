@@ -1,5 +1,4 @@
 import path from 'path'
-import fs from 'fs'
 import url from 'url'
 import { generatorFolder, resolveTypeName } from './utils'
 import GenerateTsType from './generateTsType'
@@ -36,7 +35,7 @@ export default class ApiGenerator {
   public generator() {
     const apiData = this.openAPIData
     for (const spec of apiData) {
-      const { info, paths, components } = spec
+      const { info, components } = spec
       const name = resolveTypeName(info.title|| 'default_api')
       // 创建 api 文件夹
       const outputFolder = path.resolve(this.output, name)

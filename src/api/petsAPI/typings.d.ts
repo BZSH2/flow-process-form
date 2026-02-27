@@ -1,4 +1,4 @@
-declare namespace shangdianAPI {
+declare namespace petsAPI {
   /** 宠物所属分类。 */
   interface Category {
     /** 类别唯一 ID。 */

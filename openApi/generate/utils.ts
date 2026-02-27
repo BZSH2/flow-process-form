@@ -46,10 +46,13 @@ export function resolveTypeName(name: string) {
   }
 
   // 如果名称不包含中文字符且不是纯数字，则直接返回原名称
-  if (!/[\u3220-\uFA29]/.test(name) && !/^\d$/.test(name)) { return name }
+  if (!/[\u3220-\uFA29]/.test(name) && !/^\d$/.test(name)) { 
+    return name.replace(/[^a-zA-Z0-9_$]/g, '_') 
+  }
 
   // 处理包含中文字符的情况：移除所有空格后转换为拼音（采用驼峰风格）
-  return pinyin(name.replace(/\s/g, ''), { style: 'name' })
+  // 同时也替换掉可能的非法字符
+  return pinyin(name.replace(/\s/g, '').replace(/[^a-zA-Z0-9_$\u3220-\uFA29]/g, '_'), { style: 'name' })
 }
 
 /**
