@@ -2,7 +2,6 @@
 import { fileURLToPath } from 'url';
 import modules from './modules';
 import axios from 'axios';
-import { type OpenAPIObject } from 'openapi3-ts/oas31'
 import ApiGenerator, { type OpenApiConfig } from './generate'
 import { generatorFolder } from './generate/utils'
 
@@ -13,7 +12,11 @@ class OpenApi {
     this.config = config;
   }
 
-  // 获取 openapi json 数据（使用 Apifox）
+  /**
+   * 获取 openapi json 数据（使用 Apifox）
+   * 在工程化的的项目 开发中 需要注意
+   * 1：
+  */
   private async postOpenApiJSON() {
     const { data: {data} } = await axios.post(
       'https://m1.apifoxmock.com/m1/7827428-7575526-default/postOpenApiJson',
@@ -26,7 +29,7 @@ class OpenApi {
 
   public async open() {
     // 1. 获取openapi数据
-    const data: OpenAPIObject[] = await this.postOpenApiJSON();
+    const data = await this.postOpenApiJSON();
 
     // 2. 创建 url/api文件夹
     generatorFolder(this.config.output)

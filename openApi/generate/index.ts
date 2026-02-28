@@ -1,6 +1,7 @@
 import path from 'path'
 import url from 'url'
-import { generatorFolder, resolveTypeName } from './utils'
+import { isArray, isObject } from 'lodash-es'
+import { generatorFolder, resolveTypeName, isOpenAPI } from './utils'
 import GenerateTsType from './generateTsType'
 import GenerateRequest from './generateRequest'
 import {
@@ -17,16 +18,26 @@ export interface OpenApiConfig {
   isTs?: boolean
 }
 
+// 或者更简洁的版本：
+interface APIDataTypeRecord {
+  [key: string]: APIDataTypeRecord | OpenAPIObject[] | OpenAPIObject
+}
+
+interface APIDataType {
+  [key: string]: OpenAPIObject[] | APIDataType | APIDataType[];
+  [index: number]: OpenAPIObject[] | APIDataType | APIDataType[];
+}
+
 
 export default class ApiGenerator {
   /** 输出的文件夹路径 */
   private output: string
   /** 输入的 openapi 3.0.1 数据 */
-  private openAPIData: OpenAPIObject[]
+  private openAPIData: APIDataType
 
   constructor(
     config: OpenApiConfig,
-    openAPIData: OpenAPIObject[]
+    openAPIData: APIDataType
   ) {
     this.output = config.output
     this.openAPIData = openAPIData
@@ -34,19 +45,49 @@ export default class ApiGenerator {
 
   // 核心生成文件
   public generator() {
-    const apiData = this.openAPIData
-    for (const spec of apiData) {
-      const { info, components } = spec
-      const name = resolveTypeName(info.title|| 'default_api')
-      // 创建 api 文件夹
-      const outputFolder = path.resolve(this.output, name)
-      generatorFolder(outputFolder)
+    this.generateApi(this.openAPIData, this.output)
+  }
 
-      // 生成ts类型
-      GenerateTsType(outputFolder, components, name)
-
-      // 生成接口相关
-      GenerateRequest(outputFolder, spec)
+  private generateApi(apiData: APIDataType, outputFolder: string) {
+    if (isArray(apiData)) {
+      apiData.forEach(item => {
+        if (isOpenAPI(item)) {
+          this.generateMain(item as OpenAPIObject, outputFolder)
+        } else {
+          // 如果 item 是对象但不是 OpenAPIObject，可能是嵌套的结构
+          if (isObject(item)) {
+             this.generateApi(item as APIDataType, outputFolder)
+          }
+        }
+      })
+    } else if (isObject(apiData)) {
+      // 检查是否是 OpenAPIObject
+      if (isOpenAPI(apiData)) {
+          this.generateMain(apiData as unknown as OpenAPIObject, outputFolder)
+      } else {
+          for (const key of Object.keys(apiData)) {
+            const value = (apiData as any)[key];
+            if (isObject(value)) {
+              const filePath = path.resolve(outputFolder, key)
+              generatorFolder(filePath)
+              this.generateApi(value as APIDataType, filePath)
+            }
+          }
+      }
     }
+  }
+
+  private generateMain(apiData: OpenAPIObject, output: string) {
+    const { info, components } = apiData
+    const name = resolveTypeName(info.title|| 'default_api')
+    // 创建 api 文件夹
+    const outputFolder = path.resolve(output, name)
+    generatorFolder(outputFolder)
+
+    // 生成ts类型
+    GenerateTsType(outputFolder, components, name)
+
+    // 生成接口相关
+    GenerateRequest(outputFolder, apiData, name)
   }
 }

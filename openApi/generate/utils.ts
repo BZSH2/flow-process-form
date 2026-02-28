@@ -46,8 +46,8 @@ export function resolveTypeName(name: string) {
   }
 
   // 如果名称不包含中文字符且不是纯数字，则直接返回原名称
-  if (!/[\u3220-\uFA29]/.test(name) && !/^\d$/.test(name)) { 
-    return name.replace(/[^a-zA-Z0-9_$]/g, '_') 
+  if (!/[\u3220-\uFA29]/.test(name) && !/^\d$/.test(name)) {
+    return name.replace(/[^a-zA-Z0-9_$]/g, '_')
   }
 
   // 处理包含中文字符的情况：移除所有空格后转换为拼音（采用驼峰风格）
@@ -96,4 +96,39 @@ export async function writeFile(folderPath: string, fileName: string, content: s
     encoding: 'utf8',
   })
   return hasError
+}
+
+/**
+ * 检查是否为 OpenAPI 3.0.1 基本规范
+ * @param obj - 待检查的对象，通常是 OpenAPI 3.0.1 规范的 JSON 数据
+ * @returns 如果符合 OpenAPI 3.0.1 基本规范，返回 true；否则返回 false
+ */
+export function isOpenAPI(obj: any): boolean {
+  if (!obj || typeof obj !== 'object') return false;
+
+  // 1. 检查 openapi 版本
+  if (!obj.openapi) {
+    return false; // OpenAPI 3.0.1 的版本号是 3.0.1
+  }
+
+  // 2. 检查 info 对象
+  if (!obj.info || typeof obj.info !== 'object') {
+    return false;
+  }
+
+  // info 必须包含 title 和 version
+  if (!obj.info.title || typeof obj.info.title !== 'string') {
+    return false;
+  }
+
+  if (!obj.info.version || typeof obj.info.version !== 'string') {
+    return false;
+  }
+
+  // 3. 检查 paths
+  if (!obj.paths || typeof obj.paths !== 'object') {
+    return false;
+  }
+
+  return true;
 }
