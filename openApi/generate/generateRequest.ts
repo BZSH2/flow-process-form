@@ -85,6 +85,17 @@ interface ApiOperation {
 }
 
 /**
+ * parseOperation 函数的入参对象
+ */
+interface ParseOperationOptions {
+  method: string
+  url: string
+  op: OperationObject
+  functionName: string
+  namespace?: string
+}
+
+/**
  * 生成请求代码的核心入口函数
  *
  * 遍历 OpenAPI 对象中的 paths，解析每个操作（Operation），
@@ -99,21 +110,21 @@ export default function GenerateRequest(
   apiData: OpenAPIObject,
   namespace?: string
 ) {
-  if (!apiData.paths) return
+  if (!apiData.paths) {return}
 
   // 用于存储按 Tag 分组的 API 操作列表
   const controllerMap = new Map<string, ApiOperation[]>()
 
   // 遍历所有路径
   for (const [url, pathItem] of Object.entries(apiData.paths)) {
-    if (!pathItem) continue
+    if (!pathItem) {continue}
 
     const methods = ['get', 'post', 'put', 'delete', 'patch'] as const
 
     // 遍历所有 HTTP 方法
     for (const method of methods) {
       const operation = pathItem[method] as OperationObject
-      if (!operation) continue
+      if (!operation) {continue}
 
       // 1. 获取 Tag（用于文件分组）
       const tag = getTag(operation)
@@ -129,13 +140,13 @@ export default function GenerateRequest(
       )
 
       // 4. 解析操作详情
-      const apiOp = parseOperation(
+      const apiOp = parseOperation({
         method,
         url,
-        { ...operation, parameters: mergedParameters } as OperationObject,
+        op: { ...operation, parameters: mergedParameters } as OperationObject,
         functionName,
         namespace
-      )
+      })
 
       // 5. 添加到 Map 中
       if (!controllerMap.has(tag)) {
@@ -231,13 +242,8 @@ function getParameterKey(p: ParameterObject | ReferenceObject): string {
 /**
  * 解析单个 Operation 对象，提取生成代码所需的信息
  */
-function parseOperation(
-  method: string,
-  url: string,
-  op: OperationObject,
-  functionName: string,
-  namespace?: string
-): ApiOperation {
+function parseOperation(options: ParseOperationOptions): ApiOperation {
+  const { method, url, op, functionName, namespace } = options
   const params: ApiOperation['params'] = { query: [], path: [], header: [] }
   let hasParams = false
 
@@ -248,7 +254,7 @@ function parseOperation(
     const paramMap = new Map<string, ParameterObject>()
 
     op.parameters.forEach(param => {
-      if (isReferenceObject(param)) return // TODO: 暂不支持 Reference 类型的参数解析
+      if (isReferenceObject(param)) {return} // TODO: 暂不支持 Reference 类型的参数解析
       paramMap.set(`${param.in}:${param.name}`, param as ParameterObject)
     })
 
@@ -317,16 +323,7 @@ function parseRequestBody(op: OperationObject, namespace?: string) {
         hasFormData = true
         const schema = content['multipart/form-data'].schema
         if (schema && !isReferenceObject(schema) && schema.properties) {
-           file = []
-           for(const [key, prop] of Object.entries(schema.properties)) {
-              // 识别二进制字段
-              if(!isReferenceObject(prop) && prop.type === 'string' && prop.format === 'binary') {
-                 file.push({
-                   title: key,
-                   required: schema.required?.includes(key) || false
-                 })
-              }
-           }
+           file = parseFormDataFile(schema)
         }
       }
     }
@@ -335,11 +332,30 @@ function parseRequestBody(op: OperationObject, namespace?: string) {
 }
 
 /**
+ * 解析 FormData 中的文件字段
+ */
+function parseFormDataFile(schema: SchemaObject): ApiFile[] {
+  const file: ApiFile[] = []
+  if (!schema.properties) {return file}
+
+  for(const [key, prop] of Object.entries(schema.properties)) {
+     // 识别二进制字段
+     if(!isReferenceObject(prop) && prop.type === 'string' && prop.format === 'binary') {
+        file.push({
+          title: key,
+          required: schema.required?.includes(key) || false
+        })
+     }
+  }
+  return file
+}
+
+/**
  * 解析 Response Type
  * 优先取 200/201/default 的 JSON 响应
  */
 function getResponseType(responses?: ResponsesObject, namespace?: string): string {
-  if (!responses) return 'any'
+  if (!responses) {return 'any'}
 
   const success = responses['200'] || responses['201'] || responses['default']
   if (success && !isReferenceObject(success)) {
@@ -354,7 +370,7 @@ function getResponseType(responses?: ResponsesObject, namespace?: string): strin
  * 将 OpenAPI Schema 类型映射为 TypeScript 类型字符串
  */
 function getParamType(schema?: SchemaObject | ReferenceObject, namespace?: string): string {
-  if (!schema) return 'any'
+  if (!schema) {return 'any'}
 
   // 处理引用类型
   if (isReferenceObject(schema)) {

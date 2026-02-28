@@ -18,11 +18,6 @@ export interface OpenApiConfig {
   isTs?: boolean
 }
 
-// 或者更简洁的版本：
-interface APIDataTypeRecord {
-  [key: string]: APIDataTypeRecord | OpenAPIObject[] | OpenAPIObject
-}
-
 interface APIDataType {
   [key: string]: OpenAPIObject[] | APIDataType | APIDataType[];
   [index: number]: OpenAPIObject[] | APIDataType | APIDataType[];

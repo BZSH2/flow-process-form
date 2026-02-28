@@ -104,7 +104,7 @@ export async function writeFile(folderPath: string, fileName: string, content: s
  * @returns 如果符合 OpenAPI 3.0.1 基本规范，返回 true；否则返回 false
  */
 export function isOpenAPI(obj: any): boolean {
-  if (!obj || typeof obj !== 'object') return false;
+  if (!obj || typeof obj !== 'object') {return false;}
 
   // 1. 检查 openapi 版本
   if (!obj.openapi) {
