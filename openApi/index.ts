@@ -15,7 +15,9 @@ class OpenApi {
   /**
    * 获取 openapi json 数据（使用 Apifox）
    * 在工程化的的项目 开发中 需要注意
-   * 1：
+   * 1：支持返回数据格式详情可看 入参数据结构md
+   * 2: 入参的数据我采用的是 模块式的
+   *    不同的项目处理可以采用不同的方式 可以根据实际情况 调整 可要是与后端沟通入参出参
   */
   private async postOpenApiJSON() {
     const { data: {data} } = await axios.post(
