@@ -1,0 +1,144 @@
+name: Build and Deploy Flow Process Form
+
+on:
+  push:
+    branches:
+      - main
+      - master
+    paths:
+      - '.github/workflows/deploy-aliyun-ecs.yml'
+      - '.github/deploy/**'
+      - 'deploy/**'
+      - 'public/**'
+      - 'src/**'
+      - 'Dockerfile'
+      - '.dockerignore'
+      - 'docker-compose.prod.yml'
+      - 'index.html'
+      - 'package.json'
+      - 'pnpm-lock.yaml'
+      - 'tsconfig.json'
+      - 'tsconfig.app.json'
+      - 'tsconfig.node.json'
+      - 'uno.config.ts'
+      - 'vite.config.ts'
+  workflow_dispatch:
+
+concurrency:
+  group: flow-process-form-prod-deploy
+  cancel-in-progress: true
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    env:
+      DEPLOY_IMAGE: flow-process-form:prod-${{ github.sha }}
+      DEPLOY_PATH: ${{ vars.ALIYUN_DEPLOY_PATH || '/opt/flow-process-form' }}
+      CONTAINER_NAME: ${{ vars.ALIYUN_CONTAINER_NAME || 'flow-process-form' }}
+      HOST_PORT: ${{ vars.ALIYUN_HOST_PORT || '25002' }}
+      APP_DOMAIN: ${{ vars.ALIYUN_APP_DOMAIN || 'process.bzsh.fun' }}
+      IMAGE_ARCHIVE_NAME: flow-process-form-image.tar.gz
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Validate deployment secrets
+        env:
+          ALIYUN_ECS_HOST: ${{ secrets.ALIYUN_ECS_HOST }}
+          ALIYUN_ECS_USER: ${{ secrets.ALIYUN_ECS_USER }}
+          ALIYUN_ECS_SSH_KEY: ${{ secrets.ALIYUN_ECS_SSH_KEY }}
+        run: |
+          test -n "$ALIYUN_ECS_HOST" || { echo "Missing secret: ALIYUN_ECS_HOST"; exit 1; }
+          test -n "$ALIYUN_ECS_USER" || { echo "Missing secret: ALIYUN_ECS_USER"; exit 1; }
+          test -n "$ALIYUN_ECS_SSH_KEY" || { echo "Missing secret: ALIYUN_ECS_SSH_KEY"; exit 1; }
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Docker image
+        run: |
+          docker build -t '${{ env.DEPLOY_IMAGE }}' .
+
+      - name: Export Docker image archive
+        run: |
+          docker save '${{ env.DEPLOY_IMAGE }}' | gzip > '${{ env.IMAGE_ARCHIVE_NAME }}'
+
+      - name: Setup SSH key
+        env:
+          ALIYUN_ECS_SSH_KEY: ${{ secrets.ALIYUN_ECS_SSH_KEY }}
+        run: |
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$ALIYUN_ECS_SSH_KEY" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+
+      - name: Trust deploy host
+        env:
+          ALIYUN_ECS_HOST: ${{ secrets.ALIYUN_ECS_HOST }}
+          ALIYUN_ECS_PORT: ${{ vars.ALIYUN_ECS_PORT }}
+        run: |
+          DEPLOY_PORT="${ALIYUN_ECS_PORT:-22}"
+          ssh-keyscan -p "$DEPLOY_PORT" -H "$ALIYUN_ECS_HOST" >> ~/.ssh/known_hosts
+
+      - name: Prepare remote directory
+        env:
+          ALIYUN_ECS_HOST: ${{ secrets.ALIYUN_ECS_HOST }}
+          ALIYUN_ECS_USER: ${{ secrets.ALIYUN_ECS_USER }}
+          ALIYUN_ECS_PORT: ${{ vars.ALIYUN_ECS_PORT }}
+        run: |
+          DEPLOY_PORT="${ALIYUN_ECS_PORT:-22}"
+          ssh -p "$DEPLOY_PORT" "$ALIYUN_ECS_USER@$ALIYUN_ECS_HOST" "mkdir -p '${{ env.DEPLOY_PATH }}'"
+
+      - name: Upload deploy files and image archive
+        env:
+          ALIYUN_ECS_HOST: ${{ secrets.ALIYUN_ECS_HOST }}
+          ALIYUN_ECS_USER: ${{ secrets.ALIYUN_ECS_USER }}
+          ALIYUN_ECS_PORT: ${{ vars.ALIYUN_ECS_PORT }}
+        run: |
+          DEPLOY_PORT="${ALIYUN_ECS_PORT:-22}"
+          scp -P "$DEPLOY_PORT" \
+            docker-compose.prod.yml \
+            .github/deploy/deploy.sh \
+            '${{ env.IMAGE_ARCHIVE_NAME }}' \
+            "$ALIYUN_ECS_USER@$ALIYUN_ECS_HOST:${{ env.DEPLOY_PATH }}/"
+
+      - name: Prepare remote deploy env
+        env:
+          ALIYUN_ECS_HOST: ${{ secrets.ALIYUN_ECS_HOST }}
+          ALIYUN_ECS_USER: ${{ secrets.ALIYUN_ECS_USER }}
+          ALIYUN_ECS_PORT: ${{ vars.ALIYUN_ECS_PORT }}
+        run: |
+          cat > .deploy.remote.env <<EOF
+          DEPLOY_IMAGE=${{ env.DEPLOY_IMAGE }}
+          DEPLOY_PATH=${{ env.DEPLOY_PATH }}
+          CONTAINER_NAME=${{ env.CONTAINER_NAME }}
+          HOST_PORT=${{ env.HOST_PORT }}
+          APP_DOMAIN=${{ env.APP_DOMAIN }}
+          DEPLOY_IMAGE_ARCHIVE=${{ env.DEPLOY_PATH }}/${{ env.IMAGE_ARCHIVE_NAME }}
+          HEALTHCHECK_URL=http://127.0.0.1:${{ env.HOST_PORT }}/healthz
+          EOF
+          DEPLOY_PORT="${ALIYUN_ECS_PORT:-22}"
+          scp -P "$DEPLOY_PORT" .deploy.remote.env "$ALIYUN_ECS_USER@$ALIYUN_ECS_HOST:${{ env.DEPLOY_PATH }}/.deploy.remote.env"
+          rm -f .deploy.remote.env
+
+      - name: Deploy on server
+        env:
+          ALIYUN_ECS_HOST: ${{ secrets.ALIYUN_ECS_HOST }}
+          ALIYUN_ECS_USER: ${{ secrets.ALIYUN_ECS_USER }}
+          ALIYUN_ECS_PORT: ${{ vars.ALIYUN_ECS_PORT }}
+        run: |
+          DEPLOY_PORT="${ALIYUN_ECS_PORT:-22}"
+          ssh -p "$DEPLOY_PORT" "$ALIYUN_ECS_USER@$ALIYUN_ECS_HOST" "
+            set -e
+            chmod +x '${{ env.DEPLOY_PATH }}/deploy.sh'
+            set -a
+            . '${{ env.DEPLOY_PATH }}/.deploy.remote.env'
+            set +a
+            bash '${{ env.DEPLOY_PATH }}/deploy.sh'
+            rm -f '${{ env.DEPLOY_PATH }}/.deploy.remote.env'
+          "
+
+      - name: Deployment complete
+        run: echo "✅ Flow Process Form image built in Actions and deployed successfully."
