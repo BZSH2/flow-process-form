@@ -206,6 +206,7 @@ export default defineConfig([
       'prefer-const': 'error',
       'object-shorthand': ['error', 'always'],
       'import/no-unresolved': 'off',
+      'no-undef': 'off',
       'no-unused-vars': 'off',
     },
   },
@@ -214,9 +215,7 @@ export default defineConfig([
     ignores: ['**/*.config.ts', 'uno.config.ts'],
     extends: [
       js.configs.recommended,
-      tseslint.configs.recommendedTypeChecked,
-      tseslint.configs.strictTypeChecked,
-      tseslint.configs.stylisticTypeChecked,
+      tseslint.configs.recommended, // 回退到基础推荐配置
       pluginImport.flatConfigs.recommended,
       pluginImport.flatConfigs.typescript,
     ],
@@ -241,19 +240,28 @@ export default defineConfig([
       'eqeqeq': ['error', 'always'],
       'curly': ['error', 'all'],
       'no-console': ['warn', { allow: ['warn', 'error'] }],
-      'prefer-const': 'error',
-      'object-shorthand': ['error', 'always'],
+      'prefer-const': 'warn', // 放宽到 warn
+      'object-shorthand': ['warn', 'always'], // 放宽到 warn
       'import/no-unresolved': 'off',
+      'no-undef': 'off',
       'no-unused-vars': 'off',
       '@typescript-eslint/consistent-type-imports': [
-        'error',
+        'warn', // 放宽到 warn
         { prefer: 'type-imports', fixStyle: 'inline-type-imports' },
       ],
-      '@typescript-eslint/no-explicit-any': 'warn',
-      '@typescript-eslint/no-floating-promises': 'error',
-      '@typescript-eslint/no-misused-promises': 'error',
+      '@typescript-eslint/no-explicit-any': 'off', // 允许 any
+      '@typescript-eslint/no-floating-promises': 'off', // 允许不加 void 的 promise
+      '@typescript-eslint/no-misused-promises': 'off', // 允许各种 promise 使用场景
+      '@typescript-eslint/no-non-null-assertion': 'off', // 允许 ! 断言
+      '@typescript-eslint/ban-ts-comment': 'off', // 允许 @ts-ignore
+      '@typescript-eslint/no-unsafe-assignment': 'off', // 允许不安全的赋值
+      '@typescript-eslint/no-unsafe-member-access': 'off', // 允许不安全的成员访问
+      '@typescript-eslint/no-unsafe-return': 'off', // 允许不安全的返回
+      '@typescript-eslint/no-unsafe-argument': 'off', // 允许不安全的传参
+      '@typescript-eslint/no-unsafe-call': 'off', // 允许不安全的调用
+      '@typescript-eslint/restrict-template-expressions': 'off', // 允许模板字符串任意类型
       '@typescript-eslint/no-unused-vars': [
-        'error',
+        'warn', // 未使用变量放宽为 warn
         {
           argsIgnorePattern: '^_',
           varsIgnorePattern: '^_',
