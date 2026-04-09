@@ -17,7 +17,8 @@
     "cz": "esno scripts/commit.ts && npm run commit",
     "commitlint": "commitlint --edit",
     "prepare": "husky",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "openI18n": "dotenv -e .env.i18n -- esno scripts/GenerateI18n/index.ts"
   },
   "dependencies": {
     "antd": "^6.3.5",
@@ -40,6 +41,7 @@
     "@types/react-dom": "^19.2.3",
     "@unocss/preset-uno": "^66.6.7",
     "@vitejs/plugin-react": "^6.0.1",
+    "dotenv-cli": "^11.0.0",
     "eslint": "^9.39.4",
     "eslint-plugin-import": "^2.32.0",
     "eslint-plugin-jsonc": "^2.21.0",

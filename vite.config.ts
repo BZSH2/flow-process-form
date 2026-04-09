@@ -25,7 +25,7 @@ export default defineConfig(({ mode }) => {
       AutoImport({
         include: [/\.[tj]sx?$/],
         dts: 'src/types/auto-imports.d.ts',
-        imports: ['react', 'react-router-dom'],
+        imports: ['react', 'react-router-dom', { '@/utils/lang/t': ['t'] }],
       }),
       Components({
         dts: {

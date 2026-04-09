@@ -14,7 +14,7 @@ export const languages: Language.Status[] = [
     region: 'China',
     flag: '🇨🇳',
     antCode: 'zhCN',
-    translateCode: 'zh-Hans',
+    translateCode: 'zh',
     detectCode: 'zh',
   },
   {
@@ -34,7 +34,7 @@ export const languages: Language.Status[] = [
     region: 'Japan',
     flag: '🇯🇵',
     antCode: 'jaJP',
-    translateCode: 'ja',
+    translateCode: 'jp',
     detectCode: 'ja',
   },
   {
@@ -44,7 +44,7 @@ export const languages: Language.Status[] = [
     region: 'Korea',
     flag: '🇰🇷',
     antCode: 'koKR',
-    translateCode: 'ko',
+    translateCode: 'kor',
     detectCode: 'ko',
   },
   {
@@ -54,7 +54,7 @@ export const languages: Language.Status[] = [
     region: 'France',
     flag: '🇫🇷',
     antCode: 'frFR',
-    translateCode: 'fr',
+    translateCode: 'fra',
     detectCode: 'fr',
   },
   {
@@ -74,7 +74,7 @@ export const languages: Language.Status[] = [
     region: 'Spain',
     flag: '🇪🇸',
     antCode: 'esES',
-    translateCode: 'es',
+    translateCode: 'spa',
     detectCode: 'es',
   },
   {

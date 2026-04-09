@@ -1,8 +1,6 @@
-import { useTranslation } from 'react-i18next'
 import { useLang } from '../../store'
 
 function DashboardView() {
-  const { t } = useTranslation()
   const { lang, changeLanguage } = useLang()
 
   return (

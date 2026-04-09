@@ -23,6 +23,7 @@ declare global {
   const lazy: typeof import('react').lazy
   const memo: typeof import('react').memo
   const startTransition: typeof import('react').startTransition
+  const t: typeof import('@/utils/lang/t').t
   const use: typeof import('react').use
   const useActionState: typeof import('react').useActionState
   const useCallback: typeof import('react').useCallback
