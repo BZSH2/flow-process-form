@@ -10,8 +10,6 @@ type IconProps = Omit<SVGAttributes<SVGSVGElement>, 'name' | 'children'> & {
   size?: number | string
   /** 无障碍文案，传入后将作为可读图标 */
   label?: string
-  /** 是否旋转 */
-  spin?: boolean
 }
 
 /** 基于 createSvgIconsPlugin 生成的 symbol 渲染图标 */
@@ -20,7 +18,6 @@ function Icon({
   prefix = 'icon',
   size = '1em',
   label,
-  spin = false,
   style,
   className,
   ...rest
@@ -33,16 +30,14 @@ function Icon({
     verticalAlign: 'middle',
     ...style,
   }
-  const baseClassName = spin ? 'app-svg-icon is-spin' : 'app-svg-icon'
-  const mergedClassName = className ? `${baseClassName} ${className}` : baseClassName
 
   return (
     <svg
       aria-hidden={label ? undefined : true}
       aria-label={label}
       role={label ? 'img' : undefined}
-      className={mergedClassName}
       style={mergedStyle}
+      className={className}
       {...rest}
     >
       <use href={symbolId} />

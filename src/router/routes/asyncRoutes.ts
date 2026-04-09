@@ -24,6 +24,7 @@ const asyncRoutes: Router.RouteRecord[] = [
         name: 'dashboard',
         meta: {
           title: 'Dashboard',
+          icon: 'menus-whiteCat',
           activeMenu: 'dashboard',
         },
         lazy: async () => ({ Component: (await import('../../views/dashboard')).default }),
