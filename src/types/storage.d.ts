@@ -8,6 +8,7 @@ declare namespace Storage {
    * - value: 该键对应的值类型
    */
   interface ValueMap {
+    AUTHTOKEN: string
     /** 当前系统语言标识，例如 zh-CN / en-US */
     LANGUAGESTORAGE: string
   }

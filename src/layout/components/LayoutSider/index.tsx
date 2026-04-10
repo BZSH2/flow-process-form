@@ -22,7 +22,7 @@ export default function LayoutSider({
   mobileMenuOpen,
   onCloseMobileMenu,
 }: SiderProps) {
-  const siderCollapsed = isTablet ? true : collapse
+  const siderCollapsed = collapse
 
   const renderSiderContent = (
     contentCollapse: boolean,
@@ -31,13 +31,13 @@ export default function LayoutSider({
   ) => {
     return (
       <div className="layout-sider flex h-full flex-col">
-        <Logo collapse={contentCollapse} isMobile={contentIsMobile} />
+        <Logo collapse={contentCollapse} />
         <Menu
           collapse={contentCollapse}
           isMobile={contentIsMobile}
           onMenuItemClick={menuItemClick}
         />
-        {!contentIsMobile && !isTablet && (
+        {!contentIsMobile && (
           <Collapse collapse={contentCollapse} onToggleCollapse={onToggleCollapse} />
         )}
       </div>
@@ -61,7 +61,7 @@ export default function LayoutSider({
         placement="left"
         open={isMobile && mobileMenuOpen}
         onClose={onCloseMobileMenu}
-        width={220}
+        size={220}
         closable={false}
         styles={{ body: { padding: 0 } }}
       >

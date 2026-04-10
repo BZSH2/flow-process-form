@@ -5,9 +5,9 @@ interface CollapseProps {
 
 export default function Collapse({ collapse, onToggleCollapse }: CollapseProps) {
   return (
-    <div className="collapse items-center h-32px flex items-center justify-center">
+    <div className="collapse items-center p-4px flex items-center justify-center">
       <button
-        className="cursor-pointer border-none bg-transparent p-0"
+        className="cursor-pointer w-full py-6px border-none bg-transparent  hover:bg-slate-100"
         type="button"
         onClick={onToggleCollapse}
       >

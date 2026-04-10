@@ -4,7 +4,7 @@ import { initReactI18next } from 'react-i18next'
 import LanguageDetector from 'i18next-browser-languagedetector'
 import HttpApi from 'i18next-http-backend'
 import { defaultLanguage, getDetectedLanguage, langCodes } from '../config/lang.config'
-import { getStorage } from '@/utils/storage'
+import { getCookie } from '@/utils/cookies'
 
 // 创建独立 i18n 实例，避免直接污染默认全局实例
 export const i18n = createInstance()
@@ -16,16 +16,16 @@ export const i18n = createInstance()
 const options: InitOptions = {
   supportedLngs: langCodes,
   fallbackLng: defaultLanguage,
-  lng: getStorage('LANGUAGESTORAGE') || undefined,
+  lng: getCookie('LANGUAGE') || undefined,
   load: 'currentOnly',
   debug: import.meta.env.DEV,
   backend: {
     loadPath: '/locales/{{lng}}.json',
   },
   detection: {
-    order: ['localStorage', 'navigator'],
-    lookupLocalStorage: 'LANGUAGESTORAGE',
-    caches: [], // 交给 store 来接管 localStorage 的同步
+    order: ['cookie', 'navigator'],
+    lookupCookie: 'LANGUAGE',
+    caches: [], // 交给 store 来接管 cookie 的同步
     convertDetectedLanguage: getDetectedLanguage,
   },
   interpolation: {

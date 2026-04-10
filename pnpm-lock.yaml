@@ -20,6 +20,9 @@ importers:
       i18next-http-backend:
         specifier: ^3.0.4
         version: 3.0.4
+      js-cookies:
+        specifier: ^1.0.4
+        version: 1.0.4
       react:
         specifier: ^19.2.4
         version: 19.2.4
@@ -2854,6 +2857,9 @@ packages:
 
   js-base64@2.6.4:
     resolution: {integrity: sha512-pZe//GGmwJndub7ZghVHz7vjb2LgC1m8B07Au3eYqeqv9emhESByMXxaEgkUkEqJe87oBbSniGYoQNIBklc7IQ==}
+
+  js-cookies@1.0.4:
+    resolution: {integrity: sha512-cO1SHDH7zJsi8FihHmDtcWx90mWmrfGOrcLKPeaEX6tLyuTK2wnzgdmNa34Q6rNAd6VhQUgjDt5Eyl90VI/Fpg==}
 
   js-tokens@4.0.0:
     resolution: {integrity: sha512-RdJUflcE3cUzKiMqQgsCu06FPu9UdIJO0beYbPhHN4k6apgJtifcoCtT9bcxOpYBtpD2kCM6Sbzg4CausW/PKQ==}
@@ -7210,6 +7216,8 @@ snapshots:
   jiti@2.6.1: {}
 
   js-base64@2.6.4: {}
+
+  js-cookies@1.0.4: {}
 
   js-tokens@4.0.0: {}
 
