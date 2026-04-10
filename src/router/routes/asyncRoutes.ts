@@ -7,6 +7,7 @@ const asyncRoutes: Router.RouteRecord[] = [
     name: 'layout',
     meta: {
       title: '首页',
+      levelHidden: true,
     },
     lazy: async () => ({ Component: (await import('../../layout')).default }),
     children: [
@@ -34,6 +35,7 @@ const asyncRoutes: Router.RouteRecord[] = [
         name: 'system',
         meta: {
           title: 'System',
+          icon: 'menus-blackCat',
           activeMenu: 'system',
         },
         lazy: async () => ({ Component: (await import('../../views/system')).default }),
