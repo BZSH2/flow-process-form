@@ -1,7 +1,22 @@
 import { i18n } from '@/lang'
+import { useSyncExternalStore } from 'react'
 
-// 导出全局可直接调用的翻译函数，便于结合 auto-import 在任意模块中直接使用 t('key')
-// 通过 bind 固定 this 指向 i18n 实例，避免函数脱离对象后 this 丢失导致取词异常
-export const t = i18n.t.bind(i18n)
-// 兼容部分场景下偏好的 $t 命名，功能与 t 完全一致
+export function t(key: string, options?: Record<string, unknown>) {
+  const currentLang = i18n.resolvedLanguage ?? i18n.language
+  return i18n.t(key, { ...options, lng: currentLang })
+}
+
 export const $t = t
+
+export function useI18nRefresh() {
+  return useSyncExternalStore(
+    (onStoreChange) => {
+      i18n.on('languageChanged', onStoreChange)
+      return () => {
+        i18n.off('languageChanged', onStoreChange)
+      }
+    },
+    () => i18n.resolvedLanguage ?? i18n.language,
+    () => i18n.resolvedLanguage ?? i18n.language
+  )
+}

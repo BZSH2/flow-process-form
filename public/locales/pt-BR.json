@@ -1,3 +1,13 @@
 {
-  "测试": "Teste"
+  "测试": "Teste",
+  "导航栏": "Barra de navegação",
+  "登录": "Entrar",
+  "角色管理": "Gestão de funções",
+  "界面设置": "Configurações da interface",
+  "全屏": "ecrã inteiro",
+  "首页": "Página inicial",
+  "退出登录": "Sair do login",
+  "退出全屏": "Sair da tela inteira",
+  "系统管理": "gestão do sistema",
+  "用户管理": "Gestão de Utilizadores"
 }

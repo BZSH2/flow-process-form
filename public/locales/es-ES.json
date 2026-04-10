@@ -1,3 +1,13 @@
 {
-  "测试": "prueba"
+  "测试": "prueba",
+  "导航栏": "Barra de navegación",
+  "登录": "Iniciar sesión",
+  "角色管理": "Gestión de roles",
+  "界面设置": "Configuración de la interfaz",
+  "全屏": "Pantalla completa",
+  "首页": "Página de inicio",
+  "退出登录": "Salir de inicio de sesión",
+  "退出全屏": "Salir de la pantalla completa",
+  "系统管理": "Gestión del sistema",
+  "用户管理": "Gestión de usuarios"
 }

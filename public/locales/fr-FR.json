@@ -1,3 +1,13 @@
 {
-  "测试": "test"
+  "测试": "test",
+  "导航栏": "Barre de navigation",
+  "登录": "Connexion",
+  "角色管理": "Gestion des rôles",
+  "界面设置": "Paramètres de l'interface",
+  "全屏": "plein écran",
+  "首页": "Page d'accueil",
+  "退出登录": "Se déconnecter",
+  "退出全屏": "Quitter le plein écran",
+  "系统管理": "Gestion du système",
+  "用户管理": "Gestion des utilisateurs"
 }

@@ -3,10 +3,12 @@ import { Outlet } from 'react-router-dom'
 import LayoutSider from './components/LayoutSider'
 import LayoutHeader from './components/LayoutHeader'
 import { useResize } from './useResize'
+import { useI18nRefresh } from '@/utils/lang/t'
 
 const { Content } = Layout
 
 function AppLayout() {
+  useI18nRefresh()
   const {
     // 是否为手机端（小屏），用于切换为抽屉导航
     isMobile,

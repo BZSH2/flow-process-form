@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Menu } from 'antd'
 import type { MenuProps } from 'antd'
 import { useLocation, useNavigate } from 'react-router-dom'
@@ -42,7 +42,7 @@ function mapRoutesToMenus(routes: Router.RouteRecord[], parentPath = ''): MenuIt
       const routePath = resolveMenuPath(route.path, parentPath)
       const item: MenuItem = {
         key: routePath,
-        label: route.meta?.title,
+        label: t(route.meta.title),
         icon: route.meta?.icon ? <Icon name={route.meta.icon} /> : undefined,
       }
       const mappedChildren = mapRoutesToMenus(children, routePath)
@@ -65,7 +65,7 @@ export default function LayoutMenu({ collapse, isMobile, onMenuItemClick }: Layo
   const [openKeys, setOpenKeys] = useState<string[]>([])
 
   const routes = router.routes as unknown as Router.RouteRecord[]
-  const menuItems = useMemo(() => mapRoutesToMenus(routes), [routes])
+  const menuItems = mapRoutesToMenus(routes)
 
   // 路由变化时同步展开项，保证刷新或地址栏直达时菜单状态正确
   useEffect(() => {

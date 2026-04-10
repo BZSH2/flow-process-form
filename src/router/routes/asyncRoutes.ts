@@ -6,7 +6,6 @@ const asyncRoutes: Router.RouteRecord[] = [
     path: '/',
     name: 'layout',
     meta: {
-      title: '首页',
       levelHidden: true,
     },
     lazy: async () => ({ Component: (await import('../../layout')).default }),
@@ -24,21 +23,21 @@ const asyncRoutes: Router.RouteRecord[] = [
         path: 'dashboard',
         name: 'dashboard',
         meta: {
-          title: 'Dashboard',
+          title: '首页',
           icon: 'menus-whiteCat',
           activeMenu: 'dashboard',
         },
-        lazy: async () => ({ Component: (await import('../../views/dashboard')).default }),
+        lazy: async () => ({ Component: (await import('@/views/dashboard')).default }),
       },
       {
         path: 'system',
         name: 'system',
         meta: {
-          title: 'System',
+          title: '系统管理',
           icon: 'menus-blackCat',
           activeMenu: 'system',
         },
-        lazy: async () => ({ Component: (await import('../../views/system')).default }),
+        lazy: async () => ({ Component: (await import('@/views/system')).default }),
         children: [
           {
             index: true,
@@ -53,19 +52,19 @@ const asyncRoutes: Router.RouteRecord[] = [
             path: 'user',
             name: 'system-user',
             meta: {
-              title: 'User',
+              title: '用户管理',
               activeMenu: 'system',
             },
-            lazy: async () => ({ Component: (await import('../../views/system/user')).default }),
+            lazy: async () => ({ Component: (await import('@/views/system/user')).default }),
           },
           {
             path: 'role',
             name: 'system-role',
             meta: {
-              title: 'Role',
+              title: '角色管理',
               activeMenu: 'system',
             },
-            lazy: async () => ({ Component: (await import('../../views/system/role')).default }),
+            lazy: async () => ({ Component: (await import('@/views/system/role')).default }),
           },
         ],
       },

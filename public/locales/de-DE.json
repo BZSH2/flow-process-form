@@ -1,3 +1,13 @@
 {
-  "测试": "Test"
+  "测试": "Test",
+  "导航栏": "Navigationsleiste",
+  "登录": "Anmelden",
+  "角色管理": "Rollenmanagement",
+  "界面设置": "Schnittstelleneinstellungen",
+  "全屏": "Vollbildschirm",
+  "首页": "Startseite",
+  "退出登录": "Abmelden",
+  "退出全屏": "Vollbild beenden",
+  "系统管理": "Systemverwaltung",
+  "用户管理": "Benutzerverwaltung"
 }

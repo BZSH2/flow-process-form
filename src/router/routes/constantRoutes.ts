@@ -10,7 +10,7 @@ const constantRoutes: Router.RouteRecord[] = [
       hidden: true,
       breadcrumbHidden: true,
     },
-    lazy: async () => ({ Component: (await import('../../views/login')).default }),
+    lazy: async () => ({ Component: (await import('@/views/login')).default }),
   },
 
   {
