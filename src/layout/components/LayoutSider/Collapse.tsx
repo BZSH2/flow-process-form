@@ -7,7 +7,7 @@ export default function Collapse({ collapse, onToggleCollapse }: CollapseProps) 
   return (
     <div className="collapse items-center p-4px flex items-center justify-center">
       <button
-        className="cursor-pointer w-full py-6px border-none bg-transparent  hover:bg-slate-100"
+        className="cursor-pointer w-full py-6px rounded-8px border-none bg-transparent action-block hover:bg-[var(--app-control-item-bg-active-hover)]"
         type="button"
         onClick={onToggleCollapse}
       >

@@ -14,7 +14,7 @@ export default function LayoutHeader({ isMobile, isTablet, onOpenMobileMenu }: H
   return (
     <>
       <Header
-        style={{ background: '#fff' }}
+        style={{ background: 'var(--app-surface-color)' }}
         className="h-44px flex items-center space-between px-4px"
       >
         <div className="flex-1">

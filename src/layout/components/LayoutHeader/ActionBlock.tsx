@@ -16,7 +16,7 @@ export default forwardRef<HTMLButtonElement, ActionBlockProps>(function ActionBl
     <Tooltip title={title}>
       <button
         ref={ref}
-        className={`h-32px px-8px action-block border-radius-8px flex cursor-pointer items-center justify-center border-none bg-transparent hover:bg-slate-100 ${className}`}
+        className={`h-32px px-8px action-block rounded-8px flex cursor-pointer items-center justify-center border-none bg-transparent hover:bg-[var(--app-control-item-bg-hover)] ${className}`}
         type="button"
         onClick={onClick}
         {...rest}

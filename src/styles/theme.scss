@@ -1,0 +1,44 @@
+/* 主题变量说明：
+ * primary: 品牌主色
+ * bg/surface/bg-elevated: 页面、容器、浮层背景
+ * text/text-secondary: 主次文本
+ * fill 系列: 对齐 antd colorFill 一组填充色
+ * control-item-bg-* : 对齐 antd 控件 hover/active/selected 背景
+ */
+:root {
+  --app-primary-color: #1677ff;
+  --app-bg-color: #f5f7fa;
+  --app-surface-color: #fff;
+  --app-bg-elevated-color: #fff;
+  --app-text-color: #1f1f1f;
+  --app-text-secondary-color: rgb(31 31 31 / 0.65);
+  --app-border-color: rgb(5 5 5 / 0.06);
+  --app-fill-color: rgb(0 0 0 / 0.15);
+  --app-fill-secondary-color: rgb(0 0 0 / 0.06);
+  --app-fill-tertiary-color: rgb(0 0 0 / 0.04);
+  --app-fill-quaternary-color: rgb(0 0 0 / 0.02);
+  --app-control-item-bg-hover: rgb(0 0 0 / 0.06);
+  --app-control-item-bg-active: rgb(0 0 0 / 0.15);
+  --app-control-item-bg-active-hover: rgb(0 0 0 / 0.2);
+  --app-control-item-bg-selected: rgb(22 119 255 / 0.15);
+  --app-hover-color: var(--app-control-item-bg-hover);
+}
+
+/* 深色主题变量覆写 */
+:root[data-theme='dark'] {
+  --app-bg-color: #141414;
+  --app-surface-color: #1f1f1f;
+  --app-bg-elevated-color: #1f1f1f;
+  --app-text-color: rgb(255 255 255 / 0.88);
+  --app-text-secondary-color: rgb(255 255 255 / 0.65);
+  --app-border-color: rgb(255 255 255 / 0.14);
+  --app-fill-color: rgb(255 255 255 / 0.18);
+  --app-fill-secondary-color: rgb(255 255 255 / 0.12);
+  --app-fill-tertiary-color: rgb(255 255 255 / 0.08);
+  --app-fill-quaternary-color: rgb(255 255 255 / 0.04);
+  --app-control-item-bg-hover: rgb(255 255 255 / 0.12);
+  --app-control-item-bg-active: rgb(255 255 255 / 0.18);
+  --app-control-item-bg-active-hover: rgb(255 255 255 / 0.24);
+  --app-control-item-bg-selected: rgb(22 119 255 / 0.25);
+  --app-hover-color: var(--app-control-item-bg-hover);
+}

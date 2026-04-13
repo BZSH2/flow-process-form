@@ -1,7 +1,21 @@
-@use './normalize.scss';
+@import url('./normalize.scss');
+@import url('./theme.scss');
 
 html,
 body,
 #root {
   height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--app-bg-color);
+  color: var(--app-text-color);
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.action-block:hover {
+  background: var(--app-control-item-bg-hover);
 }

@@ -9,5 +9,12 @@
   "退出登录": "Log out",
   "退出全屏": "Exit fullscreen",
   "系统管理": "System Administration",
-  "用户管理": "User Management"
+  "用户管理": "User Management",
+  "主题模式": "Theme mode",
+  "深色模式": "Dark mode",
+  "跟随系统": "System",
+  "浅色": "Light",
+  "深色": "Dark",
+  "当前生效": "Current",
+  "主题色": "Primary color"
 }

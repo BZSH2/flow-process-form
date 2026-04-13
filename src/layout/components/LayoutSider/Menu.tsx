@@ -4,6 +4,7 @@ import type { MenuProps } from 'antd'
 import { useLocation, useNavigate } from 'react-router-dom'
 import Icon from '@/icons'
 import router from '@/router'
+import { useResolvedThemeMode } from '@/store'
 
 type MenuItem = Required<MenuProps>['items'][number]
 interface LayoutMenuProps {
@@ -42,7 +43,7 @@ function mapRoutesToMenus(routes: Router.RouteRecord[], parentPath = ''): MenuIt
       const routePath = resolveMenuPath(route.path, parentPath)
       const item: MenuItem = {
         key: routePath,
-        label: t(route.meta.title),
+        label: t(route.meta.title ?? ''),
         icon: route.meta?.icon ? <Icon name={route.meta.icon} /> : undefined,
       }
       const mappedChildren = mapRoutesToMenus(children, routePath)
@@ -63,6 +64,7 @@ export default function LayoutMenu({ collapse, isMobile, onMenuItemClick }: Layo
   const navigate = useNavigate()
   const { pathname } = useLocation()
   const [openKeys, setOpenKeys] = useState<string[]>([])
+  const resolvedMode = useResolvedThemeMode()
 
   const routes = router.routes as unknown as Router.RouteRecord[]
   const menuItems = mapRoutesToMenus(routes)
@@ -86,6 +88,7 @@ export default function LayoutMenu({ collapse, isMobile, onMenuItemClick }: Layo
 
   return (
     <Menu
+      theme={resolvedMode}
       mode="inline"
       selectedKeys={[pathname]}
       openKeys={mergedOpenKeys}

@@ -2,6 +2,7 @@ import { Drawer, Layout } from 'antd'
 import Logo from './Logo'
 import Menu from './Menu'
 import Collapse from './Collapse'
+import { useResolvedThemeMode } from '@/store'
 
 const { Sider } = Layout
 
@@ -23,6 +24,7 @@ export default function LayoutSider({
   onCloseMobileMenu,
 }: SiderProps) {
   const siderCollapsed = collapse
+  const resolvedMode = useResolvedThemeMode()
 
   const renderSiderContent = (
     contentCollapse: boolean,
@@ -48,8 +50,8 @@ export default function LayoutSider({
     <>
       {!isMobile && (
         <Sider
-          theme="light"
-          style={{ background: '#fff' }}
+          theme={resolvedMode}
+          style={{ background: 'var(--app-surface-color)' }}
           width={isTablet ? 200 : 220}
           collapsedWidth={64}
           collapsed={siderCollapsed}
