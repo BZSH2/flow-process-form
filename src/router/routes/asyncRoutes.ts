@@ -68,6 +68,16 @@ const asyncRoutes: Router.RouteRecord[] = [
           },
         ],
       },
+      {
+        path: 'process',
+        name: 'process',
+        meta: {
+          title: '流程图',
+          icon: 'menus-borderCollie',
+          activeMenu: 'process',
+        },
+        lazy: async () => ({ Component: (await import('@/views/process')).default }),
+      },
     ],
   },
 ]

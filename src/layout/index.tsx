@@ -1,14 +1,16 @@
 import { Layout } from 'antd'
-import { Outlet } from 'react-router-dom'
+import { Outlet, useLocation } from 'react-router-dom'
 import LayoutSider from './components/LayoutSider'
 import LayoutHeader from './components/LayoutHeader'
 import { useResize } from './useResize'
 import { useI18nRefresh } from '@/utils/lang/t'
+import { updateDocumentTitle } from '@/router/guard'
 
 const { Content } = Layout
 
 function AppLayout() {
-  useI18nRefresh()
+  const currentLang = useI18nRefresh()
+  const location = useLocation()
   const {
     // 是否为手机端（小屏），用于切换为抽屉导航
     isMobile,
@@ -25,6 +27,10 @@ function AppLayout() {
     // 关闭移动端菜单抽屉
     onCloseMobileMenu,
   } = useResize()
+
+  useEffect(() => {
+    updateDocumentTitle(location.pathname)
+  }, [currentLang, location.pathname])
 
   return (
     // 外层 Layout 负责整体骨架：左侧菜单 + 右侧主区域
