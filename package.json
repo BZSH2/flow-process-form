@@ -21,6 +21,8 @@
     "openI18n": "dotenv -e .env.i18n -- esno scripts/GenerateI18n/index.ts"
   },
   "dependencies": {
+    "@logicflow/core": "^2.1.11",
+    "@logicflow/extension": "^2.1.15",
     "antd": "^6.3.5",
     "i18next": "^26.0.3",
     "i18next-browser-languagedetector": "^8.2.1",

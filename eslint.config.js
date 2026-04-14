@@ -14,6 +14,10 @@ import { readFileSync } from 'node:fs'
 const eslintIgnores = JSON.parse(
   readFileSync(new URL('./.eslintignore.json', import.meta.url), 'utf-8')
 )
+const componentsDts = readFileSync(new URL('./src/types/components.d.ts', import.meta.url), 'utf-8')
+const componentGlobals = Object.fromEntries(
+  [...componentsDts.matchAll(/const\s+([A-Z]\w+):/g)].map(([, name]) => [name, 'readonly'])
+)
 
 export default defineConfig([
   globalIgnores(eslintIgnores),
@@ -161,7 +165,7 @@ export default defineConfig([
       },
       globals: {
         ...globals.browser,
-        Icon: 'readonly',
+        ...componentGlobals,
       },
     },
     settings: {
@@ -177,7 +181,7 @@ export default defineConfig([
       'object-shorthand': ['error', 'always'],
       'react/react-in-jsx-scope': 'off',
       'react/jsx-no-target-blank': 'error',
-      'react/jsx-no-undef': ['error', { allowGlobals: true }],
+      'react/jsx-no-undef': 'off',
       'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
       'import/no-unresolved': 'off',
       'no-unused-vars': 'off',
@@ -228,7 +232,7 @@ export default defineConfig([
       },
       globals: {
         ...globals.browser,
-        Icon: 'readonly',
+        ...componentGlobals,
       },
     },
     settings: {

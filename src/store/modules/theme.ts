@@ -4,18 +4,22 @@ import { useEffect, useState } from 'react'
 
 export type ThemeMode = 'system' | 'light' | 'dark'
 export type ResolvedThemeMode = 'light' | 'dark'
+export type ThemeComponentSize = 'small' | 'middle' | 'large'
 
 export type ThemeState = {
   mode: ThemeMode
   primaryColor: string
+  componentSize: ThemeComponentSize
   changeTheme: (mode: ThemeMode) => void
   changePrimaryColor: (color: string) => void
+  changeComponentSize: (size: ThemeComponentSize) => void
   toggleTheme: () => void
 }
 
 const createSlice: StateCreator<ThemeState> = (set, get) => ({
   mode: 'system',
   primaryColor: '#1677ff',
+  componentSize: 'middle',
   changeTheme: (mode: ThemeMode): void => {
     if (get().mode === mode) {
       return
@@ -30,6 +34,14 @@ const createSlice: StateCreator<ThemeState> = (set, get) => ({
     }
     set(() => ({
       primaryColor: color,
+    }))
+  },
+  changeComponentSize: (size: ThemeComponentSize): void => {
+    if (get().componentSize === size) {
+      return
+    }
+    set(() => ({
+      componentSize: size,
     }))
   },
   toggleTheme: (): void => {
@@ -54,6 +66,7 @@ export const useThemeStore = create<ThemeState>()(
       partialize: (state) => ({
         mode: state.mode,
         primaryColor: state.primaryColor,
+        componentSize: state.componentSize,
       }),
       merge: (persistedState, currentState) => {
         const typedPersistedState = persistedState as Partial<ThemeState>

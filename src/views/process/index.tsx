@@ -1,7 +1,5 @@
-export default function Process() {
-  return (
-    <div>
-      <h1>Process</h1>
-    </div>
-  )
+import Process from '@/components/Process'
+
+export default function ProcessView() {
+  return <Process />
 }

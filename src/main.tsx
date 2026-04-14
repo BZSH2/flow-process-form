@@ -4,7 +4,7 @@ import 'virtual:uno.css'
 import 'virtual:svg-icons-register'
 import './styles/index.scss'
 import './lang'
-import App from './App'
+import RootApp from './App'
 
 const rootElement = document.getElementById('root')
 
@@ -14,6 +14,6 @@ if (rootElement === null) {
 
 createRoot(rootElement).render(
   <StrictMode>
-    <App />
+    <RootApp />
   </StrictMode>
 )

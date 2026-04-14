@@ -47,7 +47,7 @@ function AppLayout() {
         {/* Header 负责顶部操作区与移动端菜单触发 */}
         <LayoutHeader isMobile={isMobile} isTablet={isTablet} onOpenMobileMenu={onOpenMobileMenu} />
         {/* Outlet 渲染当前路由页面内容 */}
-        <Content>
+        <Content className="h-full m-12px">
           <Outlet />
         </Content>
       </Layout>

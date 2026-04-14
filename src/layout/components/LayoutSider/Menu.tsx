@@ -54,10 +54,56 @@ function mapRoutesToMenus(routes: Router.RouteRecord[], parentPath = ''): MenuIt
     })
 }
 
+// 展平路由，建立 path -> routeMeta 的索引，便于根据当前路由读取 activeMenu
+function collectRouteMetaByPath(
+  routes: Router.RouteRecord[],
+  parentPath = '',
+  routeMetaByPath: Record<string, Router.RouteMeta | undefined> = {}
+) {
+  routes.forEach((route) => {
+    const currentPath = route.index ? parentPath || '/' : resolveMenuPath(route.path, parentPath)
+    routeMetaByPath[currentPath] = route.meta
+    if (route.children?.length) {
+      collectRouteMetaByPath(route.children, currentPath, routeMetaByPath)
+    }
+  })
+  return routeMetaByPath
+}
+
 // 由当前 pathname 推导需要默认展开的父级菜单 key（如 /system/user -> ['/system']）
 function getParentMenuKeys(pathname: string) {
   const segments = pathname.split('/').filter(Boolean)
   return segments.slice(0, -1).map((_, index) => `/${segments.slice(0, index + 1).join('/')}`)
+}
+
+function resolveSelectedMenuKey(
+  pathname: string,
+  routeMetaByPath: Record<string, Router.RouteMeta | undefined>
+) {
+  const exactActiveMenu = routeMetaByPath[pathname]?.activeMenu
+  if (exactActiveMenu) {
+    return exactActiveMenu
+  }
+
+  // 对于非精确命中路径（如动态段/额外层级），按最长前缀回退：
+  // 1) 优先使用前缀路由配置的 activeMenu
+  // 2) 否则使用前缀路由自身 path
+  const matchedPaths = Object.keys(routeMetaByPath)
+    .filter((routePath) => routePath !== '/' && pathname.startsWith(`${routePath}/`))
+    .sort((a, b) => b.length - a.length)
+
+  for (const routePath of matchedPaths) {
+    const activeMenu = routeMetaByPath[routePath]?.activeMenu
+    if (activeMenu) {
+      return activeMenu
+    }
+  }
+
+  if (matchedPaths.length > 0) {
+    return matchedPaths[0]
+  }
+
+  return pathname
 }
 
 export default function LayoutMenu({ collapse, isMobile, onMenuItemClick }: LayoutMenuProps) {
@@ -68,11 +114,13 @@ export default function LayoutMenu({ collapse, isMobile, onMenuItemClick }: Layo
 
   const routes = router.routes as unknown as Router.RouteRecord[]
   const menuItems = mapRoutesToMenus(routes)
+  const routeMetaByPath = collectRouteMetaByPath(routes)
+  const selectedMenuKey = resolveSelectedMenuKey(pathname, routeMetaByPath)
 
   // 路由变化时同步展开项，保证刷新或地址栏直达时菜单状态正确
   useEffect(() => {
-    setOpenKeys(getParentMenuKeys(pathname))
-  }, [pathname])
+    setOpenKeys(getParentMenuKeys(selectedMenuKey))
+  }, [selectedMenuKey])
 
   const onClick: MenuProps['onClick'] = (e) => {
     navigate(String(e.key))
@@ -90,7 +138,7 @@ export default function LayoutMenu({ collapse, isMobile, onMenuItemClick }: Layo
     <Menu
       theme={resolvedMode}
       mode="inline"
-      selectedKeys={[pathname]}
+      selectedKeys={[selectedMenuKey]}
       openKeys={mergedOpenKeys}
       inlineCollapsed={!isMobile && collapse}
       items={menuItems}

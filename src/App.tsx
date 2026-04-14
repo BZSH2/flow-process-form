@@ -1,11 +1,11 @@
-import { ConfigProvider, theme as antdTheme } from 'antd'
+import { ConfigProvider as AntdConfigProvider, theme as antdTheme } from 'antd'
 import { RouterProvider } from 'react-router-dom'
 import router from './router'
 import { useResolvedThemeMode, useTheme } from './store'
 
 export default function App() {
   const resolvedMode = useResolvedThemeMode()
-  const { primaryColor } = useTheme()
+  const { primaryColor, componentSize } = useTheme()
   const isDark = resolvedMode === 'dark'
 
   useEffect(() => {
@@ -16,7 +16,8 @@ export default function App() {
   }, [resolvedMode, primaryColor])
 
   return (
-    <ConfigProvider
+    <AntdConfigProvider
+      componentSize={componentSize}
       theme={{
         algorithm: isDark ? antdTheme.darkAlgorithm : antdTheme.defaultAlgorithm,
         token: {
@@ -25,6 +26,6 @@ export default function App() {
       }}
     >
       <RouterProvider router={router} />
-    </ConfigProvider>
+    </AntdConfigProvider>
   )
 }

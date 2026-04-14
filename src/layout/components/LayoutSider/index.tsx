@@ -1,7 +1,7 @@
 import { Drawer, Layout } from 'antd'
 import Logo from './Logo'
-import Menu from './Menu'
-import Collapse from './Collapse'
+import LayoutMenu from './Menu'
+import SiderCollapse from './Collapse'
 import { useResolvedThemeMode } from '@/store'
 
 const { Sider } = Layout
@@ -34,13 +34,13 @@ export default function LayoutSider({
     return (
       <div className="layout-sider flex h-full flex-col">
         <Logo collapse={contentCollapse} />
-        <Menu
+        <LayoutMenu
           collapse={contentCollapse}
           isMobile={contentIsMobile}
           onMenuItemClick={menuItemClick}
         />
         {!contentIsMobile && (
-          <Collapse collapse={contentCollapse} onToggleCollapse={onToggleCollapse} />
+          <SiderCollapse collapse={contentCollapse} onToggleCollapse={onToggleCollapse} />
         )}
       </div>
     )
