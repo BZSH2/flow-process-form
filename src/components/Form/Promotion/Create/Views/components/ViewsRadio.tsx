@@ -1,4 +1,4 @@
-import { Radio } from 'antd'
+import { Form as AntdForm, Radio } from 'antd'
 
 export const type: Form.FieldType = 'radio'
 
@@ -14,7 +14,7 @@ export default function ViewsRadio({
   const rules = item.rules ?? (item.required ? [{ required: true, message: `请选择${item.label}` }] : undefined)
 
   return (
-    <Form.Item
+    <AntdForm.Item
       className={className}
       label={item.label}
       name={item.name}
@@ -24,6 +24,6 @@ export default function ViewsRadio({
       {...({ onClick } as any)}
     >
       <Radio.Group options={item.options} disabled={item.disabled} {...(item.props as any)} />
-    </Form.Item>
+    </AntdForm.Item>
   )
 }

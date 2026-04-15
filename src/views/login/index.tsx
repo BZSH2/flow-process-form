@@ -1,4 +1,4 @@
-import { message } from 'antd'
+import { Button, Card, Form as AntdForm, Input, message } from 'antd'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { loginApi, type LoginPayload } from '@/api'
 import { setAuthTokens } from '@/utils/auth'
@@ -50,12 +50,12 @@ export default function LoginView() {
           </p>
         </div>
 
-        <Form<LoginPayload>
+        <AntdForm<LoginPayload>
           layout="vertical"
           initialValues={DEFAULT_LOGIN_FORM}
           onFinish={onFinish}
         >
-          <Form.Item
+          <AntdForm.Item
             name="phoneNumber"
             label="手机号"
             rules={[
@@ -64,9 +64,9 @@ export default function LoginView() {
             ]}
           >
             <Input placeholder="请输入手机号" autoComplete="username" />
-          </Form.Item>
+          </AntdForm.Item>
 
-          <Form.Item
+          <AntdForm.Item
             name="password"
             label="密码"
             rules={[
@@ -75,12 +75,12 @@ export default function LoginView() {
             ]}
           >
             <Input.Password placeholder="请输入密码" autoComplete="current-password" />
-          </Form.Item>
+          </AntdForm.Item>
 
           <Button type="primary" htmlType="submit" block loading={loading}>
             登录
           </Button>
-        </Form>
+        </AntdForm>
       </Card>
     </div>
   )

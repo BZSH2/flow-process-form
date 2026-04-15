@@ -1,6 +1,6 @@
 export const type: Form.FieldType = 'textarea'
 
-import { Input } from 'antd'
+import { Form as AntdForm, Input } from 'antd'
 
 const { TextArea } = Input
 
@@ -17,7 +17,7 @@ export default function ViewsTextarea({
     item.rules ?? (item.required ? [{ required: true, message: `请输入${item.label}` }] : undefined)
 
   return (
-    <Form.Item
+    <AntdForm.Item
       className={className}
       label={item.label}
       name={item.name}
@@ -27,6 +27,6 @@ export default function ViewsTextarea({
       {...({ onClick } as any)}
     >
       <TextArea placeholder={item.placeholder} disabled={item.disabled} {...(item.props as any)} />
-    </Form.Item>
+    </AntdForm.Item>
   )
 }

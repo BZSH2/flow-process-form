@@ -1,3 +1,5 @@
+import { Form as AntdForm } from 'antd'
+
 const modules = import.meta.glob('./components/*.tsx', {
   eager: true,
   import: '*', // 关键配置
@@ -13,7 +15,7 @@ export default function ViewsComponents({
   setSelectedId: (id: string) => void
 }) {
   return (
-    <Form
+    <AntdForm
       name="basic"
       labelCol={{ span: 8 }}
       wrapperCol={{ span: 16 }}
@@ -46,6 +48,6 @@ export default function ViewsComponents({
           />
         )
       })}
-    </Form>
+    </AntdForm>
   )
 }

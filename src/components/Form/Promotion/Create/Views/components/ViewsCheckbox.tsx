@@ -1,4 +1,4 @@
-import { Checkbox } from 'antd'
+import { Checkbox, Form as AntdForm } from 'antd'
 
 export const type: Form.FieldType = 'checkbox'
 
@@ -14,7 +14,7 @@ export default function ViewsCheckbox({
   const rules = item.rules ?? (item.required ? [{ required: true, message: `请选择${item.label}` }] : undefined)
 
   return (
-    <Form.Item
+    <AntdForm.Item
       className={className}
       label={item.label}
       name={item.name}
@@ -24,6 +24,6 @@ export default function ViewsCheckbox({
       {...({ onClick } as any)}
     >
       <Checkbox.Group options={item.options} disabled={item.disabled} {...(item.props as any)} />
-    </Form.Item>
+    </AntdForm.Item>
   )
 }

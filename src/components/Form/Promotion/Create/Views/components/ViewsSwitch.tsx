@@ -1,4 +1,4 @@
-import { Switch } from 'antd'
+import { Form as AntdForm, Switch } from 'antd'
 
 export const type: Form.FieldType = 'switch'
 
@@ -12,7 +12,7 @@ export default function ViewsSwitch({
   onClick?: (e: React.MouseEvent) => void
 }) {
   return (
-    <Form.Item
+    <AntdForm.Item
       className={className}
       label={item.label}
       name={item.name}
@@ -22,6 +22,6 @@ export default function ViewsSwitch({
       {...({ onClick } as any)}
     >
       <Switch disabled={item.disabled} {...(item.props as any)} />
-    </Form.Item>
+    </AntdForm.Item>
   )
 }

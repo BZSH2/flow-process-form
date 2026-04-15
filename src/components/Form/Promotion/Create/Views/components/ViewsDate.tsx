@@ -1,4 +1,4 @@
-import { DatePicker } from 'antd'
+import { DatePicker, Form as AntdForm } from 'antd'
 
 export const type: Form.FieldType = 'date'
 
@@ -14,7 +14,7 @@ export default function ViewsDate({
   const rules = item.rules ?? (item.required ? [{ required: true, message: `请选择${item.label}` }] : undefined)
 
   return (
-    <Form.Item
+    <AntdForm.Item
       className={className}
       label={item.label}
       name={item.name}
@@ -29,6 +29,6 @@ export default function ViewsDate({
         disabled={item.disabled}
         {...(item.props as any)}
       />
-    </Form.Item>
+    </AntdForm.Item>
   )
 }

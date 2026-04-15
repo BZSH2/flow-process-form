@@ -1,4 +1,4 @@
-import { InputNumber } from 'antd'
+import { Form as AntdForm, InputNumber } from 'antd'
 
 export const type: Form.FieldType = 'number'
 
@@ -14,7 +14,7 @@ export default function ViewsNumber({
   const rules = item.rules ?? (item.required ? [{ required: true, message: `请输入${item.label}` }] : undefined)
 
   return (
-    <Form.Item
+    <AntdForm.Item
       className={className}
       label={item.label}
       name={item.name}
@@ -29,6 +29,6 @@ export default function ViewsNumber({
         disabled={item.disabled}
         {...(item.props as any)}
       />
-    </Form.Item>
+    </AntdForm.Item>
   )
 }

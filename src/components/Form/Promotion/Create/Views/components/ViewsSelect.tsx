@@ -1,4 +1,4 @@
-import { Select } from 'antd'
+import { Form as AntdForm, Select } from 'antd'
 
 export const type: Form.FieldType = 'select'
 
@@ -14,7 +14,7 @@ export default function ViewsSelect({
   const rules = item.rules ?? (item.required ? [{ required: true, message: `请选择${item.label}` }] : undefined)
 
   return (
-    <Form.Item
+    <AntdForm.Item
       className={className}
       label={item.label}
       name={item.name}
@@ -29,6 +29,6 @@ export default function ViewsSelect({
         options={item.options}
         {...(item.props as any)}
       />
-    </Form.Item>
+    </AntdForm.Item>
   )
 }

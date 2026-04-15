@@ -1,4 +1,4 @@
-import { Input } from 'antd'
+import { Form as AntdForm, Input } from 'antd'
 
 export const type: Form.FieldType = 'input'
 
@@ -15,7 +15,7 @@ export default function ViewsInput({
     item.rules ?? (item.required ? [{ required: true, message: `请输入${item.label}` }] : undefined)
 
   return (
-    <Form.Item
+    <AntdForm.Item
       className={className}
       label={item.label}
       name={item.name}
@@ -25,6 +25,6 @@ export default function ViewsInput({
       {...({ onClick } as any)}
     >
       <Input placeholder={item.placeholder} disabled={item.disabled} {...(item.props as any)} />
-    </Form.Item>
+    </AntdForm.Item>
   )
 }
