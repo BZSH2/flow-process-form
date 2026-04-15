@@ -1,7 +1,6 @@
 declare namespace Cookie {
   interface ValueMap {
     TOKEN: string
-    REFRESH_TOKEN: string
     LANGUAGE: string
   }
 

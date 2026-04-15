@@ -1,8 +1,10 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 
 export default function PromotionCreateHeader() {
   const [title, setTitle] = useState('自定义表单')
   const [inEdit, setInEdit] = useState(false)
+  const navigate = useNavigate()
 
   return (
     <div className="h-44px mb-12px bg-white flex items-center justify-between px-12px">
@@ -14,17 +16,17 @@ export default function PromotionCreateHeader() {
             onBlur={() => setInEdit(false)}
           />
         ) : (
-          <button
-            type="button"
-            className="cursor-pointer button-action"
-            onClick={() => setInEdit(true)}
-          >
+          <button type="button" className="button-action" onClick={() => setInEdit(true)}>
             {title}
           </button>
         )}
       </div>
-
-      <Button type="primary">保存</Button>
+      <div>
+        <Button onClick={() => navigate(-1)}>退出</Button>
+        <Button type="primary" className="ml-12px">
+          保存
+        </Button>
+      </div>
     </div>
   )
 }

@@ -1,6 +1,5 @@
 @import url('./normalize.scss');
 @import url('./theme.scss');
-@import url('./scrollbar.scss');
 
 html,
 body,
@@ -31,4 +30,8 @@ body {
 .button-action {
   border: none;
   background: transparent;
+  cursor: pointer;
+  &:hover {
+    background: transparent;
+  }
 }

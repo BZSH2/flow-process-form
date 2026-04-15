@@ -5,7 +5,7 @@ import {
   type LoaderFunctionArgs,
   type RouteObject,
 } from 'react-router-dom'
-import { getAccessToken } from '@/utils/auth'
+import { getCookie } from '@/utils/cookies'
 import { settingConfig } from '@/config/setting.config'
 import constantRoutes from './routes/constantRoutes'
 import asyncRoutes from './routes/asyncRoutes'
@@ -18,7 +18,7 @@ const TITLE_ROUTES = [...constantRoutes, ...asyncRoutes] as RouteObject[]
 
 // 通过本地 token 判定当前是否已登录
 function isAuthenticated() {
-  return Boolean(getAccessToken())
+  return Boolean(getCookie('TOKEN'))
 }
 
 // 白名单路由不参与登录拦截，例如登录页本身

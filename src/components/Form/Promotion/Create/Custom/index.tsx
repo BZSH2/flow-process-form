@@ -117,7 +117,6 @@ export default function PromotionCreateCustom({
         className="flex-1 min-h-0"
         options={{
           scrollbars: {
-            theme: 'os-theme-app',
             autoHide: 'leave',
             autoHideDelay: 300,
           },

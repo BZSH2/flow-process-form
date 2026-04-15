@@ -199,8 +199,8 @@ function createRequestInstance() {
     }
 
     const headers = AxiosHeaders.from(config.headers)
-    if (!headers.has('Authorization')) {
-      headers.set('Authorization', `Bearer ${token}`)
+    if (!headers.get('Authorization')) {
+      headers.set('Authorization', token)
     }
     config.headers = headers
     return config
