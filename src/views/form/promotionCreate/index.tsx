@@ -1,3 +1,5 @@
+import PromotionCreate from '@/components/Form/Promotion/Create'
+
 export default function PromotionCreateForm() {
-  return <div className="h-full">1111</div>
+  return <PromotionCreate />
 }

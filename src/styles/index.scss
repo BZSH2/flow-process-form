@@ -25,3 +25,9 @@ body {
 .action-block:hover {
   background: var(--app-control-item-bg-hover);
 }
+
+/** 操作按钮 恢复样式 */
+.button-action {
+  border: none;
+  background: transparent;
+}
