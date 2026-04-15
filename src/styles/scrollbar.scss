@@ -1,0 +1,19 @@
+/* OverlayScrollbars 自定义主题（偏 macOS 风格） */
+.os-theme-app {
+  --os-size: 8px;
+  --os-padding-perpendicular: 2px;
+  --os-padding-axis: 2px;
+  --os-handle-border-radius: 999px;
+  --os-handle-bg: color-mix(in srgb, var(--app-text-secondary-color) 35%, transparent);
+  --os-handle-bg-hover: color-mix(in srgb, var(--app-text-secondary-color) 55%, transparent);
+  --os-handle-bg-active: color-mix(in srgb, var(--app-text-secondary-color) 75%, transparent);
+  --os-track-bg: transparent;
+  --os-track-bg-hover: transparent;
+  --os-track-bg-active: transparent;
+}
+
+:root[data-theme='dark'] .os-theme-app {
+  --os-handle-bg: color-mix(in srgb, #fff 28%, transparent);
+  --os-handle-bg-hover: color-mix(in srgb, #fff 45%, transparent);
+  --os-handle-bg-active: color-mix(in srgb, #fff 62%, transparent);
+}

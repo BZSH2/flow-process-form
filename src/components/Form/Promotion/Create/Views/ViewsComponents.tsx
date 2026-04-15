@@ -31,9 +31,10 @@ export default function ViewsComponents({
         }
 
         const Component = moduleMatch.default
+        const renderKey = `${item.id || item.name}-${JSON.stringify(item)}`
         return (
           <Component
-            key={item.id || item.name}
+            key={renderKey}
             item={item}
             onClick={(e: React.MouseEvent) => {
               e.preventDefault()

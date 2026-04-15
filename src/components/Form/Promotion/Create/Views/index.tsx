@@ -1,18 +1,21 @@
 import type { DragEvent } from 'react'
-import { useState } from 'react'
-import { generateUniqueId } from '@/utils/index'
 import ViewsComponents from './ViewsComponents'
 
-export default function PromotionCreateViews() {
-  // 视图列表
-  const [views, setViews] = useState<Form.Item[]>([])
-  const [selectedId, setSelectedId] = useState<string>()
-
+export default function PromotionCreateViews({
+  views,
+  selectedId,
+  setSelectedId,
+  onAddView,
+}: {
+  views: Form.Item[]
+  selectedId?: string
+  setSelectedId: (id: string) => void
+  onAddView: (item: Form.Item) => void
+}) {
   const onDrop = (event: DragEvent<HTMLDivElement>) => {
     event.preventDefault()
     const templateItem: Form.Item = JSON.parse(event.dataTransfer.getData('templateItem'))
-    templateItem.id = generateUniqueId('view-')
-    setViews((prev) => [...prev, templateItem])
+    onAddView(templateItem)
   }
 
   const onDragOver = (event: DragEvent<HTMLDivElement>) => {

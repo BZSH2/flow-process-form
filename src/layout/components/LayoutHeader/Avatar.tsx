@@ -1,6 +1,7 @@
 import type { MenuProps } from 'antd'
 import { Avatar as AntdAvatar, Dropdown } from 'antd'
 import router from '@/router'
+import { clearAuthTokens } from '@/utils/auth'
 import ActionBlock from './ActionBlock'
 
 export default function Avatar({ isMobile }: { isMobile: boolean }) {
@@ -24,6 +25,7 @@ export default function Avatar({ isMobile }: { isMobile: boolean }) {
       return
     }
     if (key === 'logout') {
+      clearAuthTokens()
       router.navigate('/login')
     }
   }
