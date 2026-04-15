@@ -1,15 +1,8 @@
 import type { RequestConfig } from '@/utils/request'
 import { post } from '@/utils/request'
+import type { LoginPayload, LoginResult } from './typings'
 
-export interface LoginPayload {
-  phoneNumber: string
-  password: string
-}
-
-export interface LoginResult {
-  accessToken: string
-  refreshToken: string
-}
+export type { LoginPayload, LoginResult } from './typings'
 
 /**
  * 用户登录

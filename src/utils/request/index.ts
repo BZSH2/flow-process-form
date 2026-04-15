@@ -35,6 +35,7 @@ export class RequestError extends Error {
   }
 }
 
+// 401 时统一回跳登录页；若后续做路由解耦，可改为外部注入回调处理。
 const LOGIN_PATH = '/login'
 const DEFAULT_ERROR_MESSAGE = '请求失败'
 const DEFAULT_NETWORK_ERROR_MESSAGE = '网络异常，请稍后重试'
@@ -42,7 +43,37 @@ const SUCCESS_CODES = new Set([0, 200])
 
 const DEFAULT_TIMEOUT = 10000
 const API_TIMEOUT = Number(import.meta.env.VITE_API_TIMEOUT ?? DEFAULT_TIMEOUT)
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL?.trim() || '/api'
+
+function trimEndSlash(value: string) {
+  return value.replace(/\/+$/, '')
+}
+
+// 规范化 baseURL，避免出现缺少 /api 前缀导致请求落到 /auth/* 的问题。
+// 支持三类输入：
+// 1) 空值 -> /api
+// 2) 相对路径 -> 保留原路径（去尾斜杠）
+// 3) 绝对地址 -> 若 pathname 为空则补 /api
+function normalizeBaseURL(rawBaseURL?: string) {
+  const value = rawBaseURL?.trim()
+  if (!value) {
+    return '/api'
+  }
+
+  if (value.startsWith('/')) {
+    return trimEndSlash(value) || '/api'
+  }
+
+  try {
+    const url = new URL(value)
+    const normalizedPath = trimEndSlash(url.pathname)
+    url.pathname = normalizedPath && normalizedPath !== '/' ? normalizedPath : '/api'
+    return url.toString().replace(/\/+$/, '')
+  } catch {
+    return trimEndSlash(value)
+  }
+}
+
+const API_BASE_URL = normalizeBaseURL(import.meta.env.VITE_API_BASE_URL)
 
 function getBaseURL() {
   return API_BASE_URL
@@ -80,6 +111,9 @@ function isEnvelopePayload(payload: unknown): payload is ResponseEnvelope {
   return isObject(payload) && ('data' in payload || 'code' in payload || 'statusCode' in payload)
 }
 
+// 兼容两类返回：
+// 1) 标准业务包裹 { code/statusCode/success/message/data }
+// 2) 原始数据（文件流、第三方接口等）
 function resolveResponseData<T>(payload: unknown): T {
   if (!isEnvelopePayload(payload)) {
     return payload as T
@@ -120,6 +154,7 @@ function normalizeError(error: unknown): RequestError {
   return new RequestError(fallbackMessage, { status })
 }
 
+// 保留当前页面作为 redirect，登录成功后可回跳。
 function redirectToLogin() {
   if (typeof window === 'undefined') {
     return
@@ -151,6 +186,7 @@ function createRequestInstance() {
     timeout: getTimeout(),
   })
 
+  // 默认自动带 token，可通过 withToken=false 关闭（如登录接口）。
   instance.interceptors.request.use((config: InternalAxiosRequestConfig) => {
     const requestConfig = getRequestConfig(config)
     if (requestConfig.withToken === false) {
@@ -175,6 +211,7 @@ function createRequestInstance() {
     (error: unknown) => {
       const requestError = normalizeError(error)
 
+      // 未授权统一清理凭证并跳登录，避免使用过期 token 死循环请求。
       if (requestError.code === 401 || requestError.status === 401) {
         clearAuthTokens()
         redirectToLogin()
