@@ -1,3 +1,6 @@
+# 当前线上推荐模式：Caddy 仅做反向代理，站点内容由 Docker 容器提供。
+# 不要把 process.bzsh.fun 配成 root/file_server 直接读取部署目录，
+# 否则会导致部署文件暴露和版本切换不一致。
 process.bzsh.fun {
   encode zstd gzip
 

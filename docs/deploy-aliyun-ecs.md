@@ -76,6 +76,14 @@
 - `ALIYUN_APP_DOMAIN`
   - 可选，默认 `process.bzsh.fun`
 
+> ⚠️ `ALIYUN_DEPLOY_PATH` 必须与网站公开目录分离。
+>
+> 当前线上建议值：`/opt/flow-process-form`
+>
+> 不要配置成：`/var/www/process.bzsh.fun/current`
+>
+> 否则 GitHub Actions 上传的 `deploy.sh`、`docker-compose.prod.yml`、镜像归档等文件会落到公网可读目录，且 Caddy 容易继续按静态站方式返回旧页面，而不是反代到容器端口。
+
 ---
 
 ## 五、服务器首次准备
@@ -105,6 +113,7 @@ mkdir -p /opt/flow-process-form
 
 - Caddy 对外接入 `process.bzsh.fun`
 - Caddy 反代到容器端口 `127.0.0.1:25002`
+- 部署文件与镜像归档仅保存在独立部署目录（如 `/opt/flow-process-form`），不要暴露到站点根目录
 
 示例：
 

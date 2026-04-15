@@ -36,3 +36,4 @@ pnpm build
 
 - 提交前会由 `husky + lint-staged` 执行增量质量检查。
 - 自动发布、Lint 规则、代码样式、工程规范均已拆分到 docs 专题文档。
+- 当前部署模式为 **Docker + Caddy 反向代理**；`ALIYUN_DEPLOY_PATH` 应使用独立目录（建议 `/opt/flow-process-form`），不要直接指向网站静态根目录。
