@@ -43,6 +43,9 @@ export default defineConfig(async ({ mode }) => {
         '/api': {
           target: proxyTarget,
           changeOrigin: true,
+          // Follow upstream 30x in dev so stale local env values like
+          // http://host/api do not leak an extra redirect back to localhost.
+          followRedirects: true,
         },
       },
     },
