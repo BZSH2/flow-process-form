@@ -85,7 +85,20 @@ function normalizeBaseURL(rawBaseURL?: string) {
   }
 }
 
-const API_BASE_URL = import.meta.env.DEV
+function shouldUseLocalProxy() {
+  if (import.meta.env.DEV) {
+    return true
+  }
+
+  if (typeof window === 'undefined') {
+    return false
+  }
+
+  const hostname = window.location.hostname
+  return hostname === 'localhost' || hostname === '127.0.0.1' || hostname.endsWith('.local')
+}
+
+const API_BASE_URL = shouldUseLocalProxy()
   ? DEV_API_BASE_URL
   : normalizeBaseURL(import.meta.env.VITE_API_BASE_URL || DEFAULT_API_BASE_URL)
 

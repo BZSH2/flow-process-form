@@ -1,10 +1,15 @@
 import { getRefreshToken } from '@/utils/auth'
-import { post, RequestError, type RequestConfig } from '@/utils/request'
+import { post, request, RequestError, type RequestConfig } from '@/utils/request'
 
 export type LoginPayload = Auth.LoginPayload
 export type AuthTokens = Auth.Tokens
 export type LoginResult = Auth.LoginResult
 export type OperationMessage = Auth.OperationMessage
+
+function toBearerToken(token: string) {
+  const trimmedToken = token.trim()
+  return /^Bearer\s+/i.test(trimmedToken) ? trimmedToken : `Bearer ${trimmedToken}`
+}
 
 /**
  * 用户登录
@@ -35,9 +40,15 @@ export function refreshTokenApi(config?: RequestConfig) {
     return Promise.reject(new RequestError('登录状态已失效，请重新登录', { status: 401 }))
   }
 
-  return post<AuthTokens>('/auth/refresh', undefined, {
+  return request<AuthTokens>({
     ...config,
-    token: refreshToken,
+    url: '/auth/refresh',
+    method: 'POST',
+    withToken: false,
     skipAuthRefresh: true,
+    headers: {
+      ...config?.headers,
+      Authorization: toBearerToken(refreshToken),
+    },
   })
 }
