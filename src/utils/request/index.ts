@@ -65,6 +65,10 @@ function trimEndSlash(value: string) {
   return value.replace(/\/+$/, '')
 }
 
+function dedupeApiPath(value: string) {
+  return value.replace(/\/api\/api(?=\/|$)/g, '/api')
+}
+
 function normalizeBaseURL(rawBaseURL?: string) {
   const value = rawBaseURL?.trim()
   if (!value) {
@@ -72,16 +76,16 @@ function normalizeBaseURL(rawBaseURL?: string) {
   }
 
   if (value.startsWith('/')) {
-    return trimEndSlash(value) || '/api'
+    return dedupeApiPath(trimEndSlash(value) || '/api')
   }
 
   try {
     const url = new URL(value)
-    const normalizedPath = trimEndSlash(url.pathname)
+    const normalizedPath = dedupeApiPath(trimEndSlash(url.pathname))
     url.pathname = normalizedPath && normalizedPath !== '/' ? normalizedPath : '/api'
     return url.toString().replace(/\/+$/, '')
   } catch {
-    return trimEndSlash(value)
+    return dedupeApiPath(trimEndSlash(value))
   }
 }
 
@@ -217,6 +221,28 @@ function getErrorRequestConfig(
   return error.config as InternalAxiosRequestConfig & RequestConfig
 }
 
+function normalizeRequestUrl(url?: string) {
+  if (!url) {
+    return url
+  }
+
+  const trimmedUrl = url.trim()
+  if (!trimmedUrl) {
+    return trimmedUrl
+  }
+
+  const dedupedUrl = dedupeApiPath(trimmedUrl)
+  const baseURL = getBaseURL()
+  const hasApiBase = baseURL === '/api' || /\/api$/i.test(baseURL)
+
+  if (hasApiBase && /^\/api(?=\/|$)/.test(dedupedUrl)) {
+    const normalizedPath = dedupedUrl.replace(/^\/api(?=\/|$)/, '')
+    return normalizedPath || '/'
+  }
+
+  return dedupedUrl
+}
+
 function getRequestToken(config: RequestConfig) {
   if (config.withToken === false) {
     return ''
@@ -272,7 +298,7 @@ function shouldLogoutOnRefreshFailure(error: RequestError) {
 async function requestAccessTokenByRefreshToken(refreshToken: string) {
   try {
     const response = await axios.request<unknown>({
-      baseURL: getBaseURL(),
+      baseURL: normalizeBaseURL(getBaseURL()),
       timeout: getTimeout(),
       url: '/auth/refresh',
       method: 'POST',
@@ -313,7 +339,7 @@ function refreshAccessToken() {
 
 function createRequestInstance() {
   const instance = axios.create({
-    baseURL: getBaseURL(),
+    baseURL: normalizeBaseURL(getBaseURL()),
     timeout: getTimeout(),
   })
 
@@ -374,7 +400,12 @@ function createRequestInstance() {
 export const requestInstance: AxiosInstance = createRequestInstance()
 
 export async function request<T = unknown, D = unknown>(config: RequestConfig<D>): Promise<T> {
-  const response: AxiosResponse<unknown, D> = await requestInstance.request(config)
+  const normalizedConfig: RequestConfig<D> = {
+    ...config,
+    url: normalizeRequestUrl(config.url),
+  }
+
+  const response: AxiosResponse<unknown, D> = await requestInstance.request(normalizedConfig)
   return resolveResponseData<T>(response.data)
 }
 
