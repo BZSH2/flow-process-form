@@ -7,12 +7,69 @@ function normalizeToken(token: string) {
   return token.trim()
 }
 
+function canUseBrowserStorage() {
+  return typeof window !== 'undefined' && typeof window.localStorage !== 'undefined'
+}
+
+function getLocalToken(key: string) {
+  if (!canUseBrowserStorage()) {
+    return null
+  }
+
+  try {
+    return window.localStorage.getItem(key)
+  } catch {
+    return null
+  }
+}
+
+function setLocalToken(key: string, value: string) {
+  if (!canUseBrowserStorage()) {
+    return
+  }
+
+  try {
+    window.localStorage.setItem(key, value)
+  } catch {
+    // ignore storage write failures in restrictive environments
+  }
+}
+
+function removeLocalToken(key: string) {
+  if (!canUseBrowserStorage()) {
+    return
+  }
+
+  try {
+    window.localStorage.removeItem(key)
+  } catch {
+    // ignore storage remove failures in restrictive environments
+  }
+}
+
+function getTokenWithFallback(cookieKey: Cookie.Key, storageKey: string) {
+  const cookieToken = getCookie(cookieKey)?.trim() || null
+  const localToken = getLocalToken(storageKey)?.trim() || null
+
+  if (localToken && (!cookieToken || cookieToken !== localToken)) {
+    setCookie(cookieKey, localToken)
+    return localToken
+  }
+
+  if (cookieToken && !localToken) {
+    setLocalToken(storageKey, cookieToken)
+    return cookieToken
+  }
+
+  return localToken || cookieToken
+}
+
 export function getAccessToken() {
-  return getCookie(ACCESS_TOKEN_KEY)
+  return getTokenWithFallback(ACCESS_TOKEN_KEY, ACCESS_TOKEN_KEY)
 }
 
 export function getRefreshToken() {
-  return getCookie(REFRESH_TOKEN_KEY)
+  return getTokenWithFallback(REFRESH_TOKEN_KEY, REFRESH_TOKEN_KEY)
 }
 
 export function setAuthToken(accessToken: string) {
@@ -21,10 +78,12 @@ export function setAuthToken(accessToken: string) {
     return
   }
 
-  setCookie(
-    ACCESS_TOKEN_KEY,
-    tokenValue.startsWith('Bearer ') ? tokenValue : `Bearer ${tokenValue}`
-  )
+  const normalizedAccessToken = tokenValue.startsWith('Bearer ')
+    ? tokenValue
+    : `Bearer ${tokenValue}`
+
+  setCookie(ACCESS_TOKEN_KEY, normalizedAccessToken)
+  setLocalToken(ACCESS_TOKEN_KEY, normalizedAccessToken)
 }
 
 export function setAuthTokens(accessToken: string, refreshToken?: string) {
@@ -33,10 +92,13 @@ export function setAuthTokens(accessToken: string, refreshToken?: string) {
   const nextRefreshToken = refreshToken?.trim()
   if (nextRefreshToken) {
     setCookie(REFRESH_TOKEN_KEY, nextRefreshToken)
+    setLocalToken(REFRESH_TOKEN_KEY, nextRefreshToken)
   }
 }
 
 export function clearAuthTokens() {
   removeCookie(ACCESS_TOKEN_KEY)
   removeCookie(REFRESH_TOKEN_KEY)
+  removeLocalToken(ACCESS_TOKEN_KEY)
+  removeLocalToken(REFRESH_TOKEN_KEY)
 }

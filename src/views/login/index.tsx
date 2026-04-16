@@ -1,7 +1,7 @@
 import { Button, Card, Form as AntdForm, Input, message } from 'antd'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { loginApi, type LoginPayload } from '@/api'
-import { setAuthTokens } from '@/utils/auth'
+import { getAccessToken, setAuthTokens } from '@/utils/auth'
 
 const DEFAULT_LOGIN_FORM: LoginPayload = {
   phoneNumber: '13488888888',
@@ -31,6 +31,12 @@ export default function LoginView() {
       setLoading(true)
       const data = await loginApi(values)
       setAuthTokens(data.accessToken, data.refreshToken)
+
+      if (!getAccessToken()) {
+        message.error('登录态写入失败，请重试')
+        return
+      }
+
       message.success('登录成功')
 
       const redirectPath = resolveRedirectPath(searchParams.get('redirect'))
