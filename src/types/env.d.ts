@@ -10,7 +10,7 @@ interface ImportMetaEnv {
   readonly VITE_API_BASE_URL: AppPath | HttpUrl
   /** 请求超时时间（毫秒），.env 中以字符串形式提供 */
   readonly VITE_API_TIMEOUT: `${number}`
-  /** 本地开发代理目标地址 */
+  /** 本地开发代理目标地址（建议填域名根，如 https://example.com） */
   readonly VITE_PROXY_TARGET: HttpUrl
 }
 
