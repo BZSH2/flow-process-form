@@ -55,7 +55,8 @@ const DEFAULT_AUTH_EXPIRED_MESSAGE = '登录状态已失效，请重新登录'
 const SUCCESS_CODES = new Set([0, 200])
 
 const DEFAULT_TIMEOUT = 10000
-const DEFAULT_API_BASE_URL = import.meta.env.DEV ? '/api' : 'https://nest.admin.bzsh.fun/api'
+const DEFAULT_API_BASE_URL = 'https://nest.admin.bzsh.fun/api'
+const DEV_API_BASE_URL = '/api'
 const API_TIMEOUT = Number(import.meta.env.VITE_API_TIMEOUT ?? DEFAULT_TIMEOUT)
 
 let refreshAccessTokenPromise: Promise<string> | null = null
@@ -84,7 +85,9 @@ function normalizeBaseURL(rawBaseURL?: string) {
   }
 }
 
-const API_BASE_URL = normalizeBaseURL(import.meta.env.VITE_API_BASE_URL || DEFAULT_API_BASE_URL)
+const API_BASE_URL = import.meta.env.DEV
+  ? DEV_API_BASE_URL
+  : normalizeBaseURL(import.meta.env.VITE_API_BASE_URL || DEFAULT_API_BASE_URL)
 
 function getBaseURL() {
   return API_BASE_URL

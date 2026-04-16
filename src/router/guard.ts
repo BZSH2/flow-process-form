@@ -5,7 +5,8 @@ import {
   type LoaderFunctionArgs,
   type RouteObject,
 } from 'react-router-dom'
-import { getAccessToken } from '@/utils/auth'
+import { refreshTokenApi } from '@/api'
+import { clearAuthTokens, getAccessToken, getRefreshToken } from '@/utils/auth'
 import { settingConfig } from '@/config/setting.config'
 import constantRoutes from './routes/constantRoutes'
 import asyncRoutes from './routes/asyncRoutes'
@@ -15,10 +16,6 @@ const LOGIN_PATH = '/login'
 const HOME_PATH = '/dashboard'
 const WHITE_LIST = [LOGIN_PATH]
 const TITLE_ROUTES = [...constantRoutes, ...asyncRoutes] as RouteObject[]
-
-function isAuthenticated() {
-  return Boolean(getAccessToken())
-}
 
 function isWhiteRoute(pathname: string) {
   return WHITE_LIST.some((path) => matchPath({ path, end: false }, pathname))
@@ -35,6 +32,26 @@ function resolveRedirectPath(rawRedirectPath: string | null) {
   return HOME_PATH
 }
 
+async function ensureAuthenticated() {
+  const accessToken = getAccessToken()?.trim()
+  if (accessToken) {
+    return true
+  }
+
+  const refreshToken = getRefreshToken()?.trim()
+  if (!refreshToken) {
+    return false
+  }
+
+  try {
+    await refreshTokenApi({ skipErrorMessage: true })
+    return Boolean(getAccessToken()?.trim())
+  } catch {
+    clearAuthTokens()
+    return false
+  }
+}
+
 export function updateDocumentTitle(pathname: string) {
   if (typeof document === 'undefined') {
     return
@@ -48,10 +65,10 @@ export function updateDocumentTitle(pathname: string) {
   document.title = routeTitle ? `${t(routeTitle)} - ${appTitle}` : appTitle
 }
 
-export function routeGuardLoader({ request }: LoaderFunctionArgs) {
+export async function routeGuardLoader({ request }: LoaderFunctionArgs) {
   const url = new URL(request.url)
   const pathname = url.pathname
-  const authed = isAuthenticated()
+  const authed = await ensureAuthenticated()
   const whiteRoute = isWhiteRoute(pathname)
 
   if (!authed && !whiteRoute) {
