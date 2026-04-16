@@ -57,6 +57,7 @@ const SUCCESS_CODES = new Set([0, 200])
 const DEFAULT_TIMEOUT = 10000
 const DEFAULT_API_BASE_URL = 'https://nest.admin.bzsh.fun/api'
 const DEV_API_BASE_URL = '/api'
+const FLOW_CLIENT_VERSION = '2026-04-16-auth-v3'
 const API_TIMEOUT = Number(import.meta.env.VITE_API_TIMEOUT ?? DEFAULT_TIMEOUT)
 
 let refreshAccessTokenPromise: Promise<string> | null = null
@@ -102,12 +103,37 @@ function shouldUseLocalProxy() {
   return hostname === 'localhost' || hostname === '127.0.0.1' || hostname.endsWith('.local')
 }
 
-const API_BASE_URL = shouldUseLocalProxy()
-  ? DEV_API_BASE_URL
-  : normalizeBaseURL(import.meta.env.VITE_API_BASE_URL || DEFAULT_API_BASE_URL)
+function resolveApiBaseURL() {
+  const envBaseURL = import.meta.env.VITE_API_BASE_URL || DEFAULT_API_BASE_URL
+  return shouldUseLocalProxy() ? DEV_API_BASE_URL : normalizeBaseURL(envBaseURL)
+}
+
+function syncRequestDebugInfo(baseURL: string) {
+  if (typeof window === 'undefined') {
+    return
+  }
+
+  const runtimeWindow = window as Window & {
+    __FLOW_REQUEST_DEBUG__?: {
+      baseURL: string
+      version: string
+      origin: string
+      hostname: string
+    }
+  }
+
+  runtimeWindow.__FLOW_REQUEST_DEBUG__ = {
+    baseURL,
+    version: FLOW_CLIENT_VERSION,
+    origin: window.location.origin,
+    hostname: window.location.hostname,
+  }
+}
 
 function getBaseURL() {
-  return API_BASE_URL
+  const baseURL = resolveApiBaseURL()
+  syncRequestDebugInfo(baseURL)
+  return baseURL
 }
 
 function getTimeout() {
@@ -270,6 +296,20 @@ function applyAuthorizationHeader(
   return config
 }
 
+function applyClientDebugHeaders(
+  config: InternalAxiosRequestConfig | (InternalAxiosRequestConfig & RequestConfig)
+) {
+  const headers = AxiosHeaders.from(config.headers)
+  if (!headers.get('X-Flow-Client-Version')) {
+    headers.set('X-Flow-Client-Version', FLOW_CLIENT_VERSION)
+  }
+  if (!headers.get('X-Flow-Api-Base')) {
+    headers.set('X-Flow-Api-Base', getBaseURL())
+  }
+  config.headers = headers
+  return config
+}
+
 function shouldTryRefreshToken(
   error: unknown,
   config?: InternalAxiosRequestConfig & RequestConfig
@@ -304,6 +344,8 @@ async function requestAccessTokenByRefreshToken(refreshToken: string) {
       method: 'POST',
       headers: {
         Authorization: normalizeAuthorizationToken(refreshToken),
+        'X-Flow-Client-Version': FLOW_CLIENT_VERSION,
+        'X-Flow-Api-Base': getBaseURL(),
       },
     })
 
@@ -345,6 +387,8 @@ function createRequestInstance() {
 
   instance.interceptors.request.use((config: InternalAxiosRequestConfig) => {
     const requestConfig = getRequestConfig(config)
+    applyClientDebugHeaders(config)
+
     const token = getRequestToken(requestConfig)
     if (!token) {
       return config
