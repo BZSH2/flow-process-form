@@ -1,10 +1,11 @@
-import { getRefreshToken } from '@/utils/auth'
-import { post, request, RequestError, type RequestConfig } from '@/utils/request'
+import { clearAuthTokens, getRefreshToken } from '@/utils/auth'
+import { get, post, request, RequestError, type RequestConfig } from '@/utils/request'
 
 export type LoginPayload = Auth.LoginPayload
 export type AuthTokens = Auth.Tokens
 export type LoginResult = Auth.LoginResult
 export type OperationMessage = Auth.OperationMessage
+export type AuthProfile = Record<string, unknown>
 
 function toBearerToken(token: string) {
   const trimmedToken = token.trim()
@@ -31,24 +32,37 @@ export function logoutApi(config?: RequestConfig) {
 }
 
 /**
+ * 获取当前登录用户信息
+ * Swagger: GET /api/auth/profile
+ */
+export function getProfileApi(config?: RequestConfig) {
+  return get<AuthProfile>('/auth/profile', config)
+}
+
+/**
  * 刷新 Token
  * Swagger: POST /api/auth/refresh
  */
-export function refreshTokenApi(config?: RequestConfig) {
+export async function refreshTokenApi(config?: RequestConfig) {
   const refreshToken = getRefreshToken()?.trim()
   if (!refreshToken) {
     return Promise.reject(new RequestError('登录状态已失效，请重新登录', { status: 401 }))
   }
 
-  return request<AuthTokens>({
-    ...config,
-    url: '/auth/refresh',
-    method: 'POST',
-    withToken: false,
-    skipAuthRefresh: true,
-    headers: {
-      ...config?.headers,
-      Authorization: toBearerToken(refreshToken),
-    },
-  })
+  try {
+    return await request<AuthTokens>({
+      ...config,
+      url: '/auth/refresh',
+      method: 'POST',
+      withToken: false,
+      skipAuthRefresh: true,
+      headers: {
+        ...config?.headers,
+        Authorization: toBearerToken(refreshToken),
+      },
+    })
+  } catch (error) {
+    clearAuthTokens()
+    throw error
+  }
 }

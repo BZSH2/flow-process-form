@@ -1,14 +1,19 @@
-import { getCookie, removeCookie, setCookie } from '@/utils/cookies'
+import { getCookie, removeCookie } from '@/utils/cookies'
 
 const ACCESS_TOKEN_KEY: Cookie.Key = 'TOKEN'
 const REFRESH_TOKEN_KEY: Cookie.Key = 'REFRESH_TOKEN'
 
-function normalizeToken(token: string) {
-  return token.trim()
-}
-
 function canUseBrowserStorage() {
   return typeof window !== 'undefined' && typeof window.localStorage !== 'undefined'
+}
+
+function normalizeStoredToken(token?: string | null) {
+  const trimmedToken = token?.trim()
+  if (!trimmedToken) {
+    return null
+  }
+
+  return trimmedToken.replace(/^Bearer\s+/i, '').trim() || null
 }
 
 function getLocalToken(key: string) {
@@ -17,7 +22,7 @@ function getLocalToken(key: string) {
   }
 
   try {
-    return window.localStorage.getItem(key)
+    return normalizeStoredToken(window.localStorage.getItem(key))
   } catch {
     return null
   }
@@ -47,58 +52,57 @@ function removeLocalToken(key: string) {
   }
 }
 
-function getTokenWithFallback(cookieKey: Cookie.Key, storageKey: string) {
-  const cookieToken = getCookie(cookieKey)?.trim() || null
-  const localToken = getLocalToken(storageKey)?.trim() || null
+function migrateLegacyCookieToken(cookieKey: Cookie.Key, storageKey: string) {
+  const cookieToken = normalizeStoredToken(getCookie(cookieKey))
+  if (!cookieToken) {
+    return null
+  }
 
-  if (localToken && (!cookieToken || cookieToken !== localToken)) {
-    setCookie(cookieKey, localToken)
+  setLocalToken(storageKey, cookieToken)
+  removeCookie(cookieKey)
+  return cookieToken
+}
+
+function getStoredToken(cookieKey: Cookie.Key, storageKey: string) {
+  const localToken = getLocalToken(storageKey)
+  if (localToken) {
     return localToken
   }
 
-  if (cookieToken && !localToken) {
-    setLocalToken(storageKey, cookieToken)
-    return cookieToken
-  }
-
-  return localToken || cookieToken
+  return migrateLegacyCookieToken(cookieKey, storageKey)
 }
 
 export function getAccessToken() {
-  return getTokenWithFallback(ACCESS_TOKEN_KEY, ACCESS_TOKEN_KEY)
+  return getStoredToken(ACCESS_TOKEN_KEY, ACCESS_TOKEN_KEY)
 }
 
 export function getRefreshToken() {
-  return getTokenWithFallback(REFRESH_TOKEN_KEY, REFRESH_TOKEN_KEY)
+  return getStoredToken(REFRESH_TOKEN_KEY, REFRESH_TOKEN_KEY)
 }
 
 export function setAuthToken(accessToken: string) {
-  const tokenValue = normalizeToken(accessToken)
-  if (!tokenValue) {
+  const normalizedAccessToken = normalizeStoredToken(accessToken)
+  if (!normalizedAccessToken) {
     return
   }
 
-  const normalizedAccessToken = tokenValue.startsWith('Bearer ')
-    ? tokenValue
-    : `Bearer ${tokenValue}`
-
-  setCookie(ACCESS_TOKEN_KEY, normalizedAccessToken)
   setLocalToken(ACCESS_TOKEN_KEY, normalizedAccessToken)
+  removeCookie(ACCESS_TOKEN_KEY)
 }
 
 export function setAuthTokens(accessToken: string, refreshToken?: string) {
   setAuthToken(accessToken)
 
-  const nextRefreshToken = refreshToken?.trim()
-  if (nextRefreshToken) {
-    setCookie(REFRESH_TOKEN_KEY, nextRefreshToken)
-    setLocalToken(REFRESH_TOKEN_KEY, nextRefreshToken)
+  const normalizedRefreshToken = normalizeStoredToken(refreshToken)
+  if (normalizedRefreshToken) {
+    setLocalToken(REFRESH_TOKEN_KEY, normalizedRefreshToken)
+    removeCookie(REFRESH_TOKEN_KEY)
   }
 }
 
 export function clearAuthTokens() {
-  removeCookie(ACCESS_TOKEN_KEY)
-  removeCookie(REFRESH_TOKEN_KEY)
   removeLocalToken(ACCESS_TOKEN_KEY)
   removeLocalToken(REFRESH_TOKEN_KEY)
+  removeCookie(ACCESS_TOKEN_KEY)
+  removeCookie(REFRESH_TOKEN_KEY)
 }

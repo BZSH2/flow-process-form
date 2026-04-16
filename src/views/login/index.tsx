@@ -1,7 +1,7 @@
 import { Button, Card, Form as AntdForm, Input, message } from 'antd'
 import { useNavigate, useSearchParams } from 'react-router-dom'
-import { loginApi, type LoginPayload } from '@/api'
-import { getAccessToken, setAuthTokens } from '@/utils/auth'
+import { getProfileApi, loginApi, type LoginPayload } from '@/api'
+import { clearAuthTokens, getAccessToken, setAuthTokens } from '@/utils/auth'
 
 const DEFAULT_LOGIN_FORM: LoginPayload = {
   phoneNumber: '13488888888',
@@ -34,6 +34,14 @@ export default function LoginView() {
 
       if (!getAccessToken()) {
         message.error('登录态写入失败，请重试')
+        return
+      }
+
+      try {
+        await getProfileApi({ skipErrorMessage: true })
+      } catch {
+        clearAuthTokens()
+        message.error('会话建立失败，请重新登录')
         return
       }
 
