@@ -8,9 +8,27 @@ import Components from 'unplugin-react-components/vite'
 import { createSvgIconsPlugin } from 'vite-plugin-svg-icons'
 import UnoCSS from 'unocss/vite'
 
+const DEFAULT_PROXY_TARGET = 'https://nest.admin.bzsh.fun'
+
+function normalizeProxyTarget(rawTarget?: string) {
+  const value = rawTarget?.trim() || DEFAULT_PROXY_TARGET
+
+  try {
+    return new URL(value).origin
+  } catch {
+    return value.replace(/\/api(?:\/+)?$/i, '').replace(/\/+$/, '') || DEFAULT_PROXY_TARGET
+  }
+}
+
 export default defineConfig(async ({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '')
-  const proxyTarget = env.VITE_PROXY_TARGET || 'https://nest.admin.bzsh.fun'
+  const rawProxyTarget = env.VITE_PROXY_TARGET
+  const proxyTarget = normalizeProxyTarget(rawProxyTarget)
+
+  if (rawProxyTarget?.trim() && rawProxyTarget.trim() !== proxyTarget) {
+    console.warn(`[vite] normalized VITE_PROXY_TARGET from ${rawProxyTarget} to ${proxyTarget}`)
+  }
+
   const antdResolver = await createResolver({
     module: 'antd',
     prefix: '',
