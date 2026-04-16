@@ -70,11 +70,11 @@ export interface CustomFormListResult {
 
 export type CustomFormListData = CustomFormListResult
 
-export interface OperationMessage {
+export interface CustomFormOperationMessage {
   message: string
 }
 
-export type OperationMessageDto = OperationMessage
+export type OperationMessageDto = CustomFormOperationMessage
 
 function encodePathParam(value: string) {
   return encodeURIComponent(value)
@@ -149,7 +149,7 @@ export const updateCustomForm = updateCustomFormApi
  * 删除自定义表单
  */
 export function deleteCustomFormApi(id: string, config?: RequestConfig) {
-  return del<OperationMessage>(
+  return del<CustomFormOperationMessage>(
     CustomFormsApi.remove.url.replace(':id', encodePathParam(id)),
     config
   )
