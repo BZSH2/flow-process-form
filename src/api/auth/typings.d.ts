@@ -3,8 +3,15 @@ declare namespace Auth {
     phoneNumber: string
     password: string
   }
-  interface LoginResult {
+
+  interface Tokens {
     accessToken: string
     refreshToken: string
+  }
+
+  type LoginResult = Tokens
+
+  interface OperationMessage {
+    message: string
   }
 }

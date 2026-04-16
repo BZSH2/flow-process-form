@@ -10,92 +10,149 @@ export const CustomFormsApi = {
   remove: { method: 'DELETE', url: '/custom-forms/:id' },
 } as const
 
+export type CustomFormFieldType = Form.FieldType
+export type CustomFormFieldValue = Form.FieldValue
+export type CustomFormSchema = Array<CustomFormItem>
+
+export interface CustomFormSerializedPattern {
+  source: string
+  flags?: string
+}
+
+export interface CustomFormOption extends Form.Option {}
+
+export interface CustomFormRule extends Omit<Form.Rule, 'pattern' | 'validator'> {
+  pattern?: string | RegExp | CustomFormSerializedPattern
+  validator?: unknown
+}
+
+export interface CustomFormItem<ValueType = CustomFormFieldValue>
+  extends Omit<Form.Item<ValueType>, 'rules'> {
+  rules?: CustomFormRule[]
+}
+
+export interface CustomFormQuery {
+  page?: number
+  pageSize?: number
+  keyword?: string
+}
+
+export type QueryCustomFormDto = CustomFormQuery
+
+export interface CustomFormSavePayload {
+  code: string
+  name: string
+  remark?: string | null
+  schema: CustomFormSchema
+}
+
+export type CreateCustomFormPayload = CustomFormSavePayload
+export type UpdateCustomFormPayload = Partial<CustomFormSavePayload>
+export type CreateCustomFormDto = CreateCustomFormPayload
+export type UpdateCustomFormDto = UpdateCustomFormPayload
+
+export interface CustomFormDetail {
+  id: string
+  code: string
+  name: string
+  schema: CustomFormSchema
+  remark?: string | null
+  createdAt: string
+  updatedAt: string
+}
+
+export interface CustomFormListResult {
+  items: CustomFormDetail[]
+  total: number
+  page: number
+  pageSize: number
+}
+
+export type CustomFormListData = CustomFormListResult
+
+export interface OperationMessage {
+  message: string
+}
+
+export type OperationMessageDto = OperationMessage
+
 function encodePathParam(value: string) {
   return encodeURIComponent(value)
 }
 
-type PlainObject = Record<string, unknown>
-
-export type QueryCustomFormDto = Record<string, string | number | boolean | null | undefined>
-export type CreateCustomFormDto = PlainObject
-export type UpdateCustomFormDto = PlainObject
-export type CustomFormDetail = PlainObject
-export type CustomFormListData = PlainObject
-export type OperationMessageDto = PlainObject
-
 /**
  * 分页查询自定义表单
- * 可能错误码：403（需要管理员权限）
  */
-export function listCustomForms(
-  query?: QueryCustomFormDto,
-  config?: RequestConfig
-): Promise<CustomFormListData> {
-  return get<CustomFormListData>(CustomFormsApi.list.url, {
+export function getCustomFormsApi(params?: CustomFormQuery, config?: RequestConfig) {
+  return get<CustomFormListResult>(CustomFormsApi.list.url, {
     ...config,
-    params: query,
+    params,
   })
 }
 
-/**
- * 按编码查询自定义表单
- * 可能错误码：403（需要管理员权限）、404（自定义表单不存在）
- */
-export function getCustomFormByCode(
-  code: string,
-  config?: RequestConfig
-): Promise<CustomFormDetail> {
-  return get<CustomFormDetail>(
-    CustomFormsApi.getByCode.url.replace(':code', encodePathParam(code)),
-    config
-  )
-}
+export const listCustomForms = getCustomFormsApi
 
 /**
  * 查询自定义表单详情
- * 可能错误码：403（需要管理员权限）、404（自定义表单不存在）
  */
-export function getCustomFormDetail(id: string, config?: RequestConfig): Promise<CustomFormDetail> {
+export function getCustomFormDetailApi(id: string, config?: RequestConfig) {
   return get<CustomFormDetail>(
     CustomFormsApi.getDetail.url.replace(':id', encodePathParam(id)),
     config
   )
 }
 
+export const getCustomFormDetail = getCustomFormDetailApi
+
+/**
+ * 按编码查询自定义表单
+ */
+export function getCustomFormByCodeApi(code: string, config?: RequestConfig) {
+  return get<CustomFormDetail>(
+    CustomFormsApi.getByCode.url.replace(':code', encodePathParam(code)),
+    config
+  )
+}
+
+export const getCustomFormByCode = getCustomFormByCodeApi
+
 /**
  * 创建自定义表单
- * 可能错误码：400（schema 不合法）、403（需要管理员权限）、409（编码已存在）
  */
-export function createCustomForm(
-  payload: CreateCustomFormDto,
-  config?: RequestConfig<CreateCustomFormDto>
-): Promise<CustomFormDetail> {
-  return post<CustomFormDetail, CreateCustomFormDto>(CustomFormsApi.create.url, payload, config)
+export function createCustomFormApi(
+  payload: CreateCustomFormPayload,
+  config?: RequestConfig<CreateCustomFormPayload>
+) {
+  return post<CustomFormDetail, CreateCustomFormPayload>(CustomFormsApi.create.url, payload, config)
 }
+
+export const createCustomForm = createCustomFormApi
 
 /**
  * 更新自定义表单
- * 可能错误码：400（schema 不合法）、403（需要管理员权限）、404（不存在）、409（编码已存在）
  */
-export function updateCustomForm(
+export function updateCustomFormApi(
   id: string,
-  payload: UpdateCustomFormDto,
-  config?: RequestConfig<UpdateCustomFormDto>
-): Promise<CustomFormDetail> {
-  return patch<CustomFormDetail, UpdateCustomFormDto>(
+  payload: UpdateCustomFormPayload,
+  config?: RequestConfig<UpdateCustomFormPayload>
+) {
+  return patch<CustomFormDetail, UpdateCustomFormPayload>(
     CustomFormsApi.update.url.replace(':id', encodePathParam(id)),
     payload,
     config
   )
 }
 
+export const updateCustomForm = updateCustomFormApi
+
 /**
  * 删除自定义表单
- * 可能错误码：403（需要管理员权限）、404（自定义表单不存在）
  */
-export function removeCustomForm(id: string, config?: RequestConfig): Promise<OperationMessageDto> {
-  return del<OperationMessageDto>(
+export function deleteCustomFormApi(id: string, config?: RequestConfig) {
+  return del<OperationMessage>(
     CustomFormsApi.remove.url.replace(':id', encodePathParam(id)),
     config
   )
 }
+
+export const removeCustomForm = deleteCustomFormApi

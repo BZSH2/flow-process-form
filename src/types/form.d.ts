@@ -20,6 +20,11 @@ declare namespace Form {
    */
   type FieldValue = string | number | boolean | Array<string | number> | null
 
+  interface SerializedPattern {
+    source: string
+    flags?: string
+  }
+
   /** 下拉、单选、复选等选项数据 */
   interface Option {
     /** 选项显示文案 */
@@ -43,7 +48,7 @@ declare namespace Form {
     /** 触发时机 */
     trigger?: 'blur' | 'change' | Array<'blur' | 'change'>
     /** 正则校验 */
-    pattern?: RegExp
+    pattern?: RegExp | string | SerializedPattern
     /** 最小值/最小长度 */
     min?: number
     /** 最大值/最大长度 */
@@ -53,7 +58,9 @@ declare namespace Form {
      * @param value 当前字段值
      * @param item 当前字段配置
      */
-    validator?: (value: FieldValue, item: Item) => boolean | string | Promise<boolean | string>
+    validator?:
+      | ((value: FieldValue, item: Item) => boolean | string | Promise<boolean | string>)
+      | unknown
   }
 
   /**

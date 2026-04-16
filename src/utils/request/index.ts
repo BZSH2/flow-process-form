@@ -7,7 +7,12 @@ import axios, {
   type InternalAxiosRequestConfig,
 } from 'axios'
 import { message } from 'antd'
-import { clearAuthTokens, getAccessToken } from '@/utils/auth'
+import {
+  clearAuthTokens,
+  getAccessToken,
+  getRefreshToken,
+  setAuthTokens,
+} from '@/utils/auth'
 
 type ResponseEnvelope<T = unknown> = {
   code?: number
@@ -18,9 +23,17 @@ type ResponseEnvelope<T = unknown> = {
   data?: T
 }
 
+type AuthTokenPair = {
+  accessToken: string
+  refreshToken?: string
+}
+
 export interface RequestConfig<D = unknown> extends AxiosRequestConfig<D> {
   withToken?: boolean
+  token?: string
   skipErrorMessage?: boolean
+  skipAuthRefresh?: boolean
+  _retry?: boolean
 }
 
 export class RequestError extends Error {
@@ -35,24 +48,22 @@ export class RequestError extends Error {
   }
 }
 
-// 401 时统一回跳登录页；若后续做路由解耦，可改为外部注入回调处理。
 const LOGIN_PATH = '/login'
 const DEFAULT_ERROR_MESSAGE = '请求失败'
 const DEFAULT_NETWORK_ERROR_MESSAGE = '网络异常，请稍后重试'
+const DEFAULT_AUTH_EXPIRED_MESSAGE = '登录状态已失效，请重新登录'
 const SUCCESS_CODES = new Set([0, 200])
 
 const DEFAULT_TIMEOUT = 10000
+const DEFAULT_API_BASE_URL = import.meta.env.DEV ? '/api' : 'https://nest.admin.bzsh.fun/api'
 const API_TIMEOUT = Number(import.meta.env.VITE_API_TIMEOUT ?? DEFAULT_TIMEOUT)
+
+let refreshAccessTokenPromise: Promise<string> | null = null
 
 function trimEndSlash(value: string) {
   return value.replace(/\/+$/, '')
 }
 
-// 规范化 baseURL，避免出现缺少 /api 前缀导致请求落到 /auth/* 的问题。
-// 支持三类输入：
-// 1) 空值 -> /api
-// 2) 相对路径 -> 保留原路径（去尾斜杠）
-// 3) 绝对地址 -> 若 pathname 为空则补 /api
 function normalizeBaseURL(rawBaseURL?: string) {
   const value = rawBaseURL?.trim()
   if (!value) {
@@ -73,7 +84,7 @@ function normalizeBaseURL(rawBaseURL?: string) {
   }
 }
 
-const API_BASE_URL = normalizeBaseURL(import.meta.env.VITE_API_BASE_URL)
+const API_BASE_URL = normalizeBaseURL(import.meta.env.VITE_API_BASE_URL || DEFAULT_API_BASE_URL)
 
 function getBaseURL() {
   return API_BASE_URL
@@ -111,9 +122,6 @@ function isEnvelopePayload(payload: unknown): payload is ResponseEnvelope {
   return isObject(payload) && ('data' in payload || 'code' in payload || 'statusCode' in payload)
 }
 
-// 兼容两类返回：
-// 1) 标准业务包裹 { code/statusCode/success/message/data }
-// 2) 原始数据（文件流、第三方接口等）
 function resolveResponseData<T>(payload: unknown): T {
   if (!isEnvelopePayload(payload)) {
     return payload as T
@@ -135,6 +143,10 @@ function resolveResponseData<T>(payload: unknown): T {
 }
 
 function normalizeError(error: unknown): RequestError {
+  if (error instanceof RequestError) {
+    return error
+  }
+
   if (!axios.isAxiosError(error)) {
     return new RequestError(DEFAULT_NETWORK_ERROR_MESSAGE)
   }
@@ -154,7 +166,6 @@ function normalizeError(error: unknown): RequestError {
   return new RequestError(fallbackMessage, { status })
 }
 
-// 保留当前页面作为 redirect，登录成功后可回跳。
 function redirectToLogin() {
   if (typeof window === 'undefined') {
     return
@@ -173,11 +184,115 @@ function getRequestConfig(
   return config as InternalAxiosRequestConfig & RequestConfig
 }
 
-function getErrorRequestConfig(error: unknown): RequestConfig | undefined {
-  if (!axios.isAxiosError(error)) {
+function normalizeAuthorizationToken(token: string) {
+  const trimmedToken = token.trim()
+  if (!trimmedToken) {
+    return ''
+  }
+  return /^Bearer\s+/i.test(trimmedToken) ? trimmedToken : `Bearer ${trimmedToken}`
+}
+
+function getErrorRequestConfig(
+  error: unknown
+): (InternalAxiosRequestConfig & RequestConfig) | undefined {
+  if (!axios.isAxiosError(error) || !error.config) {
     return undefined
   }
-  return error.config as RequestConfig | undefined
+  return error.config as InternalAxiosRequestConfig & RequestConfig
+}
+
+function getRequestToken(config: RequestConfig) {
+  if (config.withToken === false) {
+    return ''
+  }
+
+  if (typeof config.token === 'string') {
+    return config.token.trim()
+  }
+
+  return getAccessToken()?.trim() || ''
+}
+
+function applyAuthorizationHeader(
+  config: InternalAxiosRequestConfig | (InternalAxiosRequestConfig & RequestConfig),
+  token: string
+) {
+  const normalizedToken = normalizeAuthorizationToken(token)
+  if (!normalizedToken) {
+    return config
+  }
+
+  const headers = AxiosHeaders.from(config.headers)
+  headers.set('Authorization', normalizedToken)
+  config.headers = headers
+  return config
+}
+
+function shouldTryRefreshToken(
+  error: unknown,
+  config?: InternalAxiosRequestConfig & RequestConfig
+) {
+  if (!axios.isAxiosError(error) || error.response?.status !== 401) {
+    return false
+  }
+
+  if (!config || config.withToken === false || config.skipAuthRefresh || config._retry) {
+    return false
+  }
+
+  const refreshToken = getRefreshToken()?.trim()
+  if (!refreshToken) {
+    return false
+  }
+
+  const requestToken = typeof config.token === 'string' ? config.token.trim() : ''
+  return requestToken !== refreshToken
+}
+
+function shouldLogoutOnRefreshFailure(error: RequestError) {
+  return error.status === 401 || error.status === 403
+}
+
+async function requestAccessTokenByRefreshToken(refreshToken: string) {
+  try {
+    const response = await axios.request<unknown>({
+      baseURL: getBaseURL(),
+      timeout: getTimeout(),
+      url: '/auth/refresh',
+      method: 'POST',
+      headers: {
+        Authorization: normalizeAuthorizationToken(refreshToken),
+      },
+    })
+
+    const tokens = resolveResponseData<AuthTokenPair>(response.data)
+    const nextAccessToken = tokens.accessToken?.trim()
+    if (!nextAccessToken) {
+      throw new RequestError(DEFAULT_AUTH_EXPIRED_MESSAGE, { status: 401 })
+    }
+
+    setAuthTokens(nextAccessToken, tokens.refreshToken?.trim() || undefined)
+    return nextAccessToken
+  } catch (error) {
+    throw normalizeError(error)
+  }
+}
+
+function refreshAccessToken() {
+  if (refreshAccessTokenPromise) {
+    return refreshAccessTokenPromise
+  }
+
+  const refreshToken = getRefreshToken()?.trim()
+  if (!refreshToken) {
+    return Promise.reject(new RequestError(DEFAULT_AUTH_EXPIRED_MESSAGE, { status: 401 }))
+  }
+
+  refreshAccessTokenPromise = requestAccessTokenByRefreshToken(refreshToken).finally(() => {
+    refreshAccessTokenPromise = null
+  })
+
+  return refreshAccessTokenPromise
 }
 
 function createRequestInstance() {
@@ -186,39 +301,49 @@ function createRequestInstance() {
     timeout: getTimeout(),
   })
 
-  // 默认自动带 token，可通过 withToken=false 关闭（如登录接口）。
   instance.interceptors.request.use((config: InternalAxiosRequestConfig) => {
     const requestConfig = getRequestConfig(config)
-    if (requestConfig.withToken === false) {
-      return config
-    }
-
-    const token = getAccessToken()
+    const token = getRequestToken(requestConfig)
     if (!token) {
       return config
     }
 
-    const headers = AxiosHeaders.from(config.headers)
-    if (!headers.get('Authorization')) {
-      headers.set('Authorization', token)
-    }
-    config.headers = headers
+    applyAuthorizationHeader(config, token)
     return config
   })
 
   instance.interceptors.response.use(
     (response) => response,
-    (error: unknown) => {
+    async (error: unknown) => {
+      const config = getErrorRequestConfig(error)
+      const isCanceled = axios.isAxiosError(error) && error.code === 'ERR_CANCELED'
+
+      if (config && shouldTryRefreshToken(error, config)) {
+        try {
+          const nextAccessToken = await refreshAccessToken()
+          config._retry = true
+          applyAuthorizationHeader(config, nextAccessToken)
+          return instance.request(config)
+        } catch (refreshError) {
+          const requestError = normalizeError(refreshError)
+          if (shouldLogoutOnRefreshFailure(requestError)) {
+            clearAuthTokens()
+            redirectToLogin()
+          }
+          if (!config.skipErrorMessage && !isCanceled) {
+            message.error(requestError.message)
+          }
+          return Promise.reject(requestError)
+        }
+      }
+
       const requestError = normalizeError(error)
 
-      // 未授权统一清理凭证并跳登录，避免使用过期 token 死循环请求。
       if (requestError.code === 401 || requestError.status === 401) {
         clearAuthTokens()
         redirectToLogin()
       }
 
-      const config = getErrorRequestConfig(error)
-      const isCanceled = axios.isAxiosError(error) && error.code === 'ERR_CANCELED'
       if (!config?.skipErrorMessage && !isCanceled) {
         message.error(requestError.message)
       }

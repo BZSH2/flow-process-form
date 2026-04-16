@@ -1,3 +1,4 @@
+import { Col } from 'antd'
 import type { CSSProperties, DragEvent } from 'react'
 
 export default function TemplateItem({ item, width }: { item: Form.Item; width: number }) {

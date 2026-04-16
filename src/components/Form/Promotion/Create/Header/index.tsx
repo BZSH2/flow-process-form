@@ -1,29 +1,42 @@
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Button, Input } from 'antd'
 
-export default function PromotionCreateHeader() {
-  const [title, setTitle] = useState('自定义表单')
-  const [inEdit, setInEdit] = useState(false)
-  const navigate = useNavigate()
-
+export default function PromotionCreateHeader({
+  title,
+  code,
+  saving,
+  onTitleChange,
+  onCodeChange,
+  onSave,
+  onBack,
+}: {
+  title: string
+  code: string
+  saving?: boolean
+  onTitleChange: (value: string) => void
+  onCodeChange: (value: string) => void
+  onSave: () => void
+  onBack: () => void
+}) {
   return (
-    <div className="h-44px mb-12px bg-white flex items-center justify-between px-12px">
-      <div className="w-300px">
-        {inEdit ? (
-          <Input
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            onBlur={() => setInEdit(false)}
-          />
-        ) : (
-          <button type="button" className="button-action" onClick={() => setInEdit(true)}>
-            {title}
-          </button>
-        )}
+    <div className="h-56px mb-12px bg-white flex items-center justify-between px-12px gap-12px">
+      <div className="flex items-center gap-12px flex-1 min-w-0">
+        <Input
+          value={title}
+          placeholder="请输入表单名称"
+          className="max-w-280px"
+          onChange={(event) => onTitleChange(event.target.value)}
+        />
+        <Input
+          value={code}
+          placeholder="请输入表单编码，如 interview-feedback"
+          className="max-w-320px"
+          onChange={(event) => onCodeChange(event.target.value)}
+        />
       </div>
-      <div>
-        <Button onClick={() => navigate(-1)}>退出</Button>
-        <Button type="primary" className="ml-12px">
+
+      <div className="flex items-center gap-8px shrink-0">
+        <Button onClick={onBack}>返回</Button>
+        <Button type="primary" loading={saving} onClick={onSave}>
           保存
         </Button>
       </div>

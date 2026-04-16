@@ -1,3 +1,4 @@
+import { Row } from 'antd'
 import { Resizable } from 're-resizable'
 import { useState } from 'react'
 import DEFAULT_TEMPLATE from './data'

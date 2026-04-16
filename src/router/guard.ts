@@ -5,7 +5,7 @@ import {
   type LoaderFunctionArgs,
   type RouteObject,
 } from 'react-router-dom'
-import { getCookie } from '@/utils/cookies'
+import { getAccessToken } from '@/utils/auth'
 import { settingConfig } from '@/config/setting.config'
 import constantRoutes from './routes/constantRoutes'
 import asyncRoutes from './routes/asyncRoutes'
@@ -16,17 +16,14 @@ const HOME_PATH = '/dashboard'
 const WHITE_LIST = [LOGIN_PATH]
 const TITLE_ROUTES = [...constantRoutes, ...asyncRoutes] as RouteObject[]
 
-// 通过本地 token 判定当前是否已登录
 function isAuthenticated() {
-  return Boolean(getCookie('TOKEN'))
+  return Boolean(getAccessToken())
 }
 
-// 白名单路由不参与登录拦截，例如登录页本身
 function isWhiteRoute(pathname: string) {
   return WHITE_LIST.some((path) => matchPath({ path, end: false }, pathname))
 }
 
-// 只允许站内路径作为回跳地址，避免外部地址注入
 function resolveRedirectPath(rawRedirectPath: string | null) {
   if (!rawRedirectPath) {
     return HOME_PATH
@@ -51,9 +48,6 @@ export function updateDocumentTitle(pathname: string) {
   document.title = routeTitle ? `${t(routeTitle)} - ${appTitle}` : appTitle
 }
 
-// 全局路由守卫：
-// 1) 未登录访问受保护页面 -> 跳转登录页并携带 redirect
-// 2) 已登录访问登录页 -> 自动跳转到 redirect 或首页
 export function routeGuardLoader({ request }: LoaderFunctionArgs) {
   const url = new URL(request.url)
   const pathname = url.pathname

@@ -8,10 +8,9 @@ import Components from 'unplugin-react-components/vite'
 import { createSvgIconsPlugin } from 'vite-plugin-svg-icons'
 import UnoCSS from 'unocss/vite'
 
-// https://vite.dev/config/
 export default defineConfig(async ({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '')
-  const proxyTarget = env.VITE_PROXY_TARGET
+  const proxyTarget = env.VITE_PROXY_TARGET || 'http://nest.admin.bzsh.fun/api'
   const antdResolver = await createResolver({
     module: 'antd',
     prefix: '',
@@ -21,6 +20,15 @@ export default defineConfig(async ({ mode }) => {
 
   return {
     base: env.VITE_APP_BASE || '/',
+    server: {
+      proxy: {
+        '/api': {
+          target: proxyTarget,
+          changeOrigin: true,
+          rewrite: (path: string) => path.replace(/^\/api/, ''),
+        },
+      },
+    },
     resolve: {
       alias: {
         '~': fileURLToPath(new URL('./', import.meta.url)),
@@ -49,13 +57,5 @@ export default defineConfig(async ({ mode }) => {
         symbolId: 'icon-[dir]-[name]',
       }),
     ],
-    server: {
-      proxy: {
-        '/api': {
-          target: proxyTarget,
-          changeOrigin: true,
-        },
-      },
-    },
   }
 })
