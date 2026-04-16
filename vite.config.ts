@@ -10,7 +10,7 @@ import UnoCSS from 'unocss/vite'
 
 export default defineConfig(async ({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '')
-  const proxyTarget = env.VITE_PROXY_TARGET || 'http://nest.admin.bzsh.fun/api'
+  const proxyTarget = env.VITE_PROXY_TARGET || 'https://nest.admin.bzsh.fun/api'
   const antdResolver = await createResolver({
     module: 'antd',
     prefix: '',
